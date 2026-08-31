@@ -58,6 +58,26 @@ CITY = "Bridgeview"
 REGION = "IL"
 POSTAL = "60455"
 
+# KEYWORD SCOPE VS ADDRESS. These are two different things and the site kept
+# confusing them.
+#
+#   The ADDRESS is Bridgeview. That is a fact, it is what goes in the footer,
+#   the contact page and the LocalBusiness schema, and Google needs a real one
+#   to rank anything locally. It never changes and it is a selling point:
+#   locally based beats a franchise office in another county.
+#
+#   The SCOPE is the region. Bridgeview is a village of 16,721 people. Scoping
+#   the home page and the five service pages to it caps the whole site at a
+#   town almost nobody searches, while 76 city pages underneath it cover all of
+#   Chicagoland. That is an inverted hierarchy: the head terms live on the home
+#   and service pages, the town terms live on the pages under areas/.
+#
+# So: home and service pages are REGIONAL, areas/*.html are town level, and
+# areas/bridgeview.html is a normal city page like the other 75. See
+# launch/08-SEO-AND-KEYWORD-RESEARCH.md rule 13.2.1.
+REGION_LONG = "Chicago and the south and southwest suburbs"
+REGION_SHORT = "Chicago and the south suburbs"
+
 # Preview switches. BOTH of these flip at go-live, together, and the go-live
 # checklist in README.md is the gate.
 NOINDEX = True        # emits robots noindex,nofollow + Disallow: / + the banner
@@ -203,9 +223,19 @@ CONFIRM = [
     "Chicago is claimed as a service area but deliberately framed as south side "
     "first. Confirm Mike is happy taking city work at all, and how far north he "
     "will go, before the noindex comes off.",
-    "Process copy. Masking, prep, cleanup and the cabinet door removal sequence "
-    "are described as standard trade practice. Confirm they match how Mike "
-    "actually works before this is indexed.",
+    "Process copy, and there is now a lot more of it. Every service page carries a "
+    "step-by-step of how a job runs and a full section on what good preparation is, "
+    "because preparation is the genuine differentiator and explaining it is the "
+    "sale. All of it is written as standard trade practice: masking, filling, "
+    "caulking, scuffing old enamel, degreasing cabinets, containing drywall dust, "
+    "washing and scraping an exterior. None of it claims anything unusual, but it "
+    "does describe how Mike's jobs run. Read it through with him and correct "
+    "anything he does differently before this is indexed.",
+    "Small promises inside the process copy. The site now says we set up and cover "
+    "the room, pack up at the end of each day, put the room back, and walk an "
+    "exterior with the customer at the end. These are ordinary and they are the "
+    "kind of thing a homeowner decides on, which is exactly why they need his "
+    "sign-off rather than ours.",
     # POSITIONING, settled 2026-08-31 by the owner. Do not re-introduce the solo
     # framing that used to live here. The site reads as a COMPANY that Mike Walsh
     # owns and runs, not as one man with a brush. Company voice throughout: "we",
@@ -1185,12 +1215,16 @@ def header(active="", up=""):
             '<header>\n  <div class="bar">\n'
             '    <a class="brand" href="' + up + 'index.html">'
             '<img src="' + up + 'logo.svg" width="34" height="34" alt="" aria-hidden="true">'
-            '<span>Colors Your Way USA<small>Painting &amp; remodeling &middot; Bridgeview, IL</small></span></a>\n'
+            # The tagline is the SCOPE line, so it names the region. The
+            # Bridgeview address is a fact and it stays, in the footer NAP block
+            # and on the contact page, where an address belongs.
+            '<span>Colors Your Way USA<small>Painting &amp; remodeling &middot; Chicago '
+            '&amp; the south suburbs</small></span></a>\n'
             '    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" '
             'aria-controls="nav"><span></span><span></span><span></span></button>\n'
             '    <nav class="nav" id="nav" aria-label="Main">' + links + '</nav>\n'
             '    <a class="hcall" href="tel:' + PHONE_E164 + '" '
-            'aria-label="Call ' + PHONE_DISPLAY + '">'
+            'aria-label="Call ' + BRAND + ' on ' + PHONE_DISPLAY + '">'
             '<span aria-hidden="true">&#9742;</span> '
             '<span class="lbl" aria-hidden="true">' + PHONE_DISPLAY + '</span></a>\n'
             '  </div>\n</header>\n')
@@ -1280,7 +1314,7 @@ def quote_form(heading, sub, page="", up=""):
     </div>
   </div>
   <div class="row">
-    <label for="qf-email">Email <span class="hint">optional, the phone is faster</span></label>
+    <label for="qf-email">Email <span class="hint">optional, calling is quicker</span></label>
     <input id="qf-email" name="email" type="email" autocomplete="email" data-label="email">
   </div>
   <div class="row">
@@ -1288,12 +1322,12 @@ def quote_form(heading, sub, page="", up=""):
     <select id="qf-service" name="service">''' + opts + '''</select>
   </div>
   <div class="row">
-    <label for="qf-town">Town <span class="hint">so we know the drive</span></label>
+    <label for="qf-town">Your town <span class="hint">so we know how far out you are</span></label>
     <input id="qf-town" name="town" type="text" autocomplete="address-level2" required data-label="town">
   </div>
   <div class="row">
-    <label for="qf-details">Anything else <span class="hint">optional</span></label>
-    <textarea id="qf-details" name="details" rows="3" placeholder="How many rooms, how old the house is, whether it has been painted before"></textarea>
+    <label for="qf-details">Anything else <span class="hint">optional, but it helps</span></label>
+    <textarea id="qf-details" name="details" rows="3" placeholder="How many rooms, roughly how old the house is, and what is bothering you about it"></textarea>
   </div>''' + tail + '''
   <div class="hp" aria-hidden="true">
     <label for="qf-botcheck">Leave this empty</label>
@@ -1301,11 +1335,11 @@ def quote_form(heading, sub, page="", up=""):
   </div>
   ''' + submit + '''
   <p class="msg" id="quote-msg" role="status" hidden></p>
-  <p class="note"><strong>Photos help more than anything you can type.</strong>
-  Text pictures of the room, the wall or the front of the house to
-  <a href="sms:''' + PHONE_E164 + '''">''' + PHONE_DISPLAY + '''</a>. Nothing gets a final price
-  without somebody standing in front of it, but photos are how we tell you what to expect
-  before that visit.</p>
+  <p class="note"><strong>A photo tells us more than anything you can type.</strong>
+  Text us a picture of the room, the wall or the front of the house at
+  <a href="sms:''' + PHONE_E164 + '''">''' + PHONE_DISPLAY + '''</a>. It will not be the final
+  price, because nothing gets priced without somebody standing in front of it, but it lets us
+  tell you what to expect before we come out.</p>
 </form>
 ''')
 
@@ -1368,14 +1402,15 @@ def faq(items):
 
 def cta(up=""):
     return ('<section class="cta">\n  <div class="wrap">\n'
-            '    <p class="eyebrow" style="color:#8fd3aa">Get it looked at</p>\n'
-            '    <h2>The fastest way to a real number is a phone call.</h2>\n'
-            '    <p>Tell us the town, the room and roughly what you want, and you will know what '
-            'happens next. Every job is quoted after a walk-through, and ' + OWNER + ' owns the '
-            'company and runs the work.</p>\n'
+            '    <p class="eyebrow" style="color:#8fd3aa">Ready when you are</p>\n'
+            '    <h2>Give us a call and we will come and look at it.</h2>\n'
+            '    <p>Tell us your town and what you want done, and we will set a time to come and '
+            'see it. You get a real number once somebody has stood in the room, not a guess over '
+            'the phone. ' + OWNER + ' owns the company and runs the crew, so you are talking to '
+            'the person responsible for the work.</p>\n'
             '    <a class="big" href="tel:' + PHONE_E164 + '">' + PHONE_DISPLAY + '</a>\n'
             '    <div class="row"><a class="btn" href="tel:' + PHONE_E164 + '">Call now</a>'
-            '<a class="btn btn-b" href="' + up + 'contact.html#quote">Send the details instead</a></div>\n'
+            '<a class="btn btn-b" href="' + up + 'contact.html#quote">Rather type it out?</a></div>\n'
             '  </div>\n</section>\n')
 
 
@@ -1389,14 +1424,12 @@ def footer(up=""):
     # "is my area on here" in one glance and hands the rest to the hub.
     regions = "".join('<li><a href="' + up + 'areas/index.html#' + k + '">' + label +
                       "</a></li>" for k, label, _ in REGIONS)
-    # Bridgeview is the one entry here that does not point at areas/. It is
-    # 0.0 miles out because it IS the shop, and the home page is the Bridgeview
-    # page (HOME_TOWN_SLUG). Sending the site-wide footer link for the town to
-    # the home page keeps the one Bridgeview destination on every page of the
-    # site instead of splitting it across two URLs.
+    # Every entry points at its own page under areas/, Bridgeview included. It
+    # used to be the exception, redirected to the home page, because the home
+    # page carried the Bridgeview head term. The home page is regional now, so
+    # the conflict is gone and the town links like every other town.
     close = ", ".join(
-        '<a href="' + up + ("index.html" if q["slug"] == HOME_TOWN_SLUG
-                            else "areas/" + q["slug"] + ".html") + '">' + q["name"] + "</a>"
+        '<a href="' + up + "areas/" + q["slug"] + '.html">' + q["name"] + "</a>"
         for q in built_places()[:10])
     hours = TRUST["hours"] if TRUST["hours"] else "Hours to supply"
     # Headings here are h2, not h4. They sit at the top level of the footer, so
@@ -1407,8 +1440,8 @@ def footer(up=""):
             '        <h2 class="fh">' + BRAND + '</h2>\n'
             '        <address>' + STREET + '<br>' + CITY + ', ' + REGION + ' ' + POSTAL + '<br>'
             '<a href="tel:' + PHONE_E164 + '">' + PHONE_DISPLAY + '</a></address>\n'
-            '        <p style="margin-top:12px">Painting and remodeling. Owned and run by '
-            + OWNER + '.</p>\n'
+            '        <p style="margin-top:12px">Painting and remodeling, inside and out. Owned '
+            'and run by ' + OWNER + '. Call and you get the company, not a call center.</p>\n'
             '        <p style="font-size:.84rem">' + hours + '</p>\n'
             '      </div>\n'
             '      <nav aria-label="Footer">\n        <h2 class="fh">Work</h2>\n'
@@ -1417,10 +1450,10 @@ def footer(up=""):
             '<li><a href="' + up + 'contact.html">Contact</a></li></ul>\n      </nav>\n'
             '      <div>\n        <h2 class="fh">Where we work</h2>\n'
             '        <ul class="fl">' + regions + '</ul>\n'
-            '        <p style="font-size:.86rem;line-height:1.8;margin-top:10px">Closest to the '
-            'shop: ' + close + '.</p>\n'
+            '        <p style="font-size:.86rem;line-height:1.8;margin-top:10px">Closest towns to '
+            'the shop: ' + close + '.</p>\n'
             '        <p style="font-size:.86rem"><a href="' + up + 'areas/index.html">'
-            'All ' + str(len(built_places())) + ' places, and what each one is like</a></p>\n'
+            'See all ' + str(len(built_places())) + ' towns we cover</a></p>\n'
             '      </div>\n'
             '    </div>\n'
             '    <p class="legal">&copy; 2026 ' + BRAND + '. ' + STREET + ', ' + CITY + ', '
@@ -1570,34 +1603,78 @@ def website_ld():
 
 SERVICES = [
  dict(slug="interior-painting", nav="Interior", card="Interior painting", hero="hero-interior",
-      title="Interior Painting, Bridgeview IL | Colors Your Way USA",
-      desc=("Interior painting on Chicago's south side and across the south and southwest "
-            "suburbs. Walls, ceilings, trim and doors, prepped properly. "
-            "Call " + PHONE_DISPLAY + "."),
-      h1="Interior painting, prepped properly and put back together.",
-      lede=("Walls, ceilings, trim, doors and the patching that has to happen first. Most of the "
-            "houses around here went up between 1955 and 1977, which means plaster, heavy casing "
-            "and paint that has been over-coated more than once. That changes the job."),
+      title="Interior Painting in Chicagoland | Colors Your Way USA",
+      desc=("Walls, ceilings, trim and doors painted properly, across Chicago and the south and "
+            "southwest suburbs. We prep first and put the room back. Call "
+            + PHONE_DISPLAY + "."),
+      h1="Interior painting for rooms that have started to look tired.",
+      lede=("Scuffed hallways, a kitchen ceiling that has gone yellow, trim that has been "
+            "painted so many times the detail has disappeared. We paint walls, ceilings, trim "
+            "and doors across Chicago and the south and southwest suburbs. We do the patching "
+            "and the sanding first, because that is what decides how it looks in five years. We "
+            "move the furniture, we cover the floors, and we put the room back when we are done."),
       formhead="Get an interior quote",
-      formsub="Tell us the rooms and the town. We call you back.",
+      formsub="Tell us which rooms and what town you are in.",
+      situations=[
+        ("The whole place has just gone dull",
+         "Nothing is wrong exactly. The walls have picked up ten years of scuffs, the white has "
+         "gone cream, and you notice it every time you walk in the door. That is the most common "
+         "call we get."),
+        ("One room has to be right, and soon",
+         "A nursery before a baby arrives, a dining room before the holidays, a spare bedroom "
+         "turning into an office. Small jobs are still jobs and we quote them."),
+        ("You are moving in or moving out",
+         "An empty house paints faster and costs less than a full one. If there is a window "
+         "before the furniture arrives or after it leaves, that is the cheapest week to do it."),
+        ("You still have to live here while it happens",
+         "You do, and most people do. We work room by room, keep the dust inside plastic, and "
+         "pack up at the end of each day so you get your house back every evening.")],
+      prep_intro=("Two painters can quote the same three rooms and come back a long way apart, "
+                  "and it is almost never about the paint. It is about what happens before the "
+                  "paint."),
+      prep=[
+        ("Filling, then sanding",
+         "Every nail hole, dent, hairline crack and old picture anchor gets filled, and then it "
+         "gets sanded flat. Filled and not sanded is a bump you will see the first sunny "
+         "morning after we leave."),
+        ("Caulking the gaps",
+         "The line where the trim meets the wall gets caulked before it gets painted. It is slow "
+         "and nobody watches it being done, which is exactly why it is the first thing dropped."),
+        ("Scuffing the old trim",
+         "Old trim paint is glossy and new paint will not grip it. It has to be sanded first. "
+         "Skip that and the finish comes off in flakes the first time a chair hits the "
+         "baseboard."),
+        ("Priming what needs it",
+         "Bare filler, water stains and any big color change get primed. Without it you are "
+         "buying a third coat that nobody quoted you for."),
+        ("Covering everything",
+         "Floors, furniture, hardware and switch plates. Taken off or covered up, not painted "
+         "around.")],
+      cheap=("A quote that comes in well under the others is rarely cheaper labor. It is fewer "
+             "hours: one coat instead of two, filler that never got sanded, no caulk, no primer, "
+             "and tape instead of taking the switch plates off. On day one it looks the same as "
+             "everybody else's work. The difference shows up around month eight, on the wall the "
+             "afternoon sun hits."),
       inc=["Walls, ceilings, trim, doors and window casings, priced separately so you can see what "
            "you are paying for",
            "Patching, filling and sanding before anything is coated",
            "Masking, floor protection and putting the room back",
            "Color matching to what is already there, or a full change with the right primer under it",
            "Closets, stairwells and hallways, which are the parts that get skipped"],
-      steps=[("Walk-through", "We stand in the room, count the doors and the trim runs, and look at "
-              "the condition of what is already on the wall. That is the only honest way to "
-              "price it."),
-             ("Prep", "Our crew fills, patches, sands, caulks and masks. This is where the time goes "
-              "on an older house and it is the part that decides whether the finish still looks "
-              "right in five years."),
-             ("Prime where it is needed", "Bare patches, stains, and any big color change get primed. "
-              "Skipping this is how a job needs a third coat it was never priced for."),
-             ("Finish coats", "We cut in, roll out, then look at it in daylight and fix what daylight "
-              "shows."),
-             ("Put it back", "Furniture back, hardware back, floors clear. We put the room back "
-              "rather than leaving that to you.")],
+      steps=[("We come and walk it with you", "We stand in the room, count the doors and the trim "
+              "runs, and look at the condition of what is already on the wall. That is the only "
+              "honest way to price it, and it does not take long."),
+             ("We set up", "Furniture to the middle of the room and covered, floors down, "
+              "hardware and switch plates off, doors kept shut. It is what stops your house "
+              "turning into a building site while the work is going on."),
+             ("Prep", "Filling, sanding, caulking and scuffing the old paint. On an older house "
+              "this is the longest part of the job and the part nobody photographs. It is "
+              "written out in full further down this page."),
+             ("Paint", "Primer where it is needed, then the finish coats, cut in by hand and "
+              "rolled out. Then we look at it in daylight and fix whatever daylight shows."),
+             ("We put the room back", "Furniture back where it was, hardware and switch plates "
+              "back on, floors clear. Putting the room back is part of the job rather than "
+              "something left to you.")],
       price_drivers=[
         ("Condition, not square footage", "This is the biggest variable and the least visible one. "
          "Patched drywall, old nicotine staining, chalking plaster and previously peeling enamel all "
@@ -1609,8 +1686,10 @@ SERVICES = [
         ("How much trim there is", "Two houses with identical floor area can be very different jobs. "
          "A 1960s house with heavy casing, six panel doors and full baseboard runs is a lot of linear "
          "feet of cutting in, and trim is the line homeowners forget to ask about."),
-        ("Pre-1978 housing", "See the note below. It is a real difference in setup and cleanup on a "
-         "large share of the houses in this area.")],
+        ("If the house is older than 1978", "Homes built before then can have lead paint under "
+         "what is on the walls now, and there are rules about how it has to be contained and "
+         "cleaned up. That is a real difference in setup and cleanup, and most houses around "
+         "here are old enough for it to apply.")],
       faq=[("Do you paint ceilings and trim, or just walls?",
             "All of it, and they are priced separately so you can decide. A lot of people ask for "
             "walls only, then look at the trim next to fresh paint and change their mind. It is worth "
@@ -1627,42 +1706,91 @@ SERVICES = [
             "No. Big furniture usually moves to the middle of the room and gets covered. Small, "
             "breakable and personal things are better off out of the way before anybody arrives."),
            ("My house is from the 1960s. Does that matter?",
-            "Yes, and it is worth understanding. The EPA lead renovation, repair and painting rule "
-            "covers anyone paid to disturb painted surfaces in housing built before 1978. Median "
-            "build year in Bridgeview is about 1975, Oak Lawn about 1967 and Burbank about 1965, so "
-            "most of the houses here are inside it. Ask any contractor how they handle it. "
+            "Yes, and it is worth knowing why. Houses built before 1978 can have lead paint "
+            "somewhere under the layers, and there are federal rules about how a paid contractor "
+            "has to contain the dust and clean up afterwards. Most of the housing around here is "
+            "old enough for that to apply. It changes how a room gets set up and cleaned, not how "
+            "it gets painted, and it is a fair question to ask anybody who quotes you. "
             "<a href=\"https://www.epa.gov/lead/lead-renovation-repair-and-painting-program\" "
-            "rel=\"nofollow noopener\">EPA guidance is here</a>.")],
+            "rel=\"nofollow noopener\">The EPA explains the rule here</a>.")],
       ba=[("ba1-before", "ba1-after", "Interior repaint, walls and ceiling"),
           ("ba3-before", "ba3-after", "Kitchen, cabinets and walls")],
       related=["exterior-painting", "cabinet-refinishing", "drywall-and-repair"]),
 
  dict(slug="exterior-painting", nav="Exterior", card="Exterior painting", hero="hero-exterior",
-      title="Exterior House Painting, Bridgeview | Colors Your Way USA",
-      desc=("Exterior house painting on Chicago's south side and across the south and southwest "
-            "suburbs. Siding, trim, soffit, fascia and doors. Call " + PHONE_DISPLAY + "."),
-      h1="Exterior painting that has to survive a Chicago winter.",
-      lede=("Siding, trim, soffit, fascia, overhangs, garage doors and front doors. An exterior in "
-            "this climate is mostly a preparation job. What gets scraped, washed, primed and caulked "
-            "decides how it looks in year four, not what goes on top of it."),
+      title="Exterior House Painting, Chicagoland | Colors Your Way",
+      desc=("Exterior house painting across Chicago and the south and southwest suburbs. Siding, "
+            "trim, soffit, fascia, garage doors, prepped properly. Call "
+            + PHONE_DISPLAY + "."),
+      h1="Exterior house painting, and the peeling wall that started it.",
+      lede=("It usually starts on one wall, the one that takes the afternoon sun. By the time "
+            "you notice it from the street, the trim and the soffit are normally going too. We "
+            "paint siding, trim, soffit, fascia, garage doors and front doors across Chicago and "
+            "the south and southwest suburbs. An exterior here is mostly a preparation job. What "
+            "gets washed, scraped, repaired and primed matters more than whatever goes on top."),
       formhead="Get an exterior quote",
-      formsub="Exteriors book up fast in spring. Ask early.",
+      formsub="Spring books up early. Ask now, paint later.",
+      situations=[
+        ("One wall is peeling and the rest looks fine",
+         "That is normal, not a mystery. South and west walls take the sun and fail years before "
+         "the shaded sides. We will tell you honestly whether you are looking at one elevation "
+         "this year or the whole house."),
+        ("You cannot see what is going on up top",
+         "Soffit, fascia and gable ends go long before the walls do, and none of it can be "
+         "judged from the driveway. We get a ladder on it before anybody puts a number on it."),
+        ("You are wondering if it is too late in the season",
+         "The working window here runs roughly April to October, and it depends on temperature "
+         "and humidity as much as the date on the calendar. Call and ask. If it is too late we "
+         "will say so rather than rush it on."),
+        ("You are not sure it needs painting at all",
+         "Sometimes it does not. Sometimes it needs a wash, some caulk and a look at two boards. "
+         "If that is the true answer, that is the answer you will get.")],
+      prep_intro=("On an exterior the paint is the cheap part. Nearly the whole price of an "
+                  "honest exterior quote is the hours that happen before the first finish coat "
+                  "goes on."),
+      prep=[
+        ("Washing it down",
+         "Dirt, chalk and mildew come off first. Paint over a chalky wall and the new coat lifts "
+         "away with the chalk, usually inside two seasons."),
+        ("Scraping back to sound",
+         "Everything loose comes off and everything still bonded stays. How much comes off is "
+         "the real size of the job, and nobody knows it exactly until the scraping is done."),
+        ("Fixing the wood first",
+         "Split trim, soft fascia and rotted sills get replaced before they get coated. Paint "
+         "over rot and you have bought yourself one season."),
+        ("Caulk and spot primer",
+         "Open joints get caulked and every bare patch gets primed. Bare wood left unprimed is "
+         "where the next failure starts, and it starts quickly."),
+        ("Painting on the right day",
+         "Temperature, dew point and how much daylight is left all decide whether today is a "
+         "painting day. Some days are not, and pushing through them is how a finish fails "
+         "early.")],
+      cheap=("The cheap exterior quote is a rinse and a coat. Little or no scraping, no wood "
+             "repair, no spot priming, sprayed on in one pass on whatever day the crew was free. "
+             "It looks excellent for a year. Then the same wall that was peeling peels again, "
+             "this time through the new paint, and the money is gone. If a quote is thousands "
+             "below the others, find the line about scraping and rotten wood and read it "
+             "carefully."),
       inc=["Wood, aluminum, vinyl, stucco and painted brick, which all behave differently and get "
            "prepped differently",
            "Trim, soffit, fascia and gable ends, which fail long before the walls do",
            "Scraping, washing, spot priming and caulking before any finish goes on",
            "Garage doors, front doors and the metal work people forget to include",
            "Decks and fences, stained or sealed, as a separate line"],
-      steps=[("Walk the whole elevation", "We look at all four sides, plus what you can only see from "
-              "a ladder. The rot at the end of a fascia board is not visible from the driveway and it "
-              "is not something you want found halfway through."),
-             ("Wash and scrape", "We take off the loose and failing material. Anything that is still "
-              "bonded stays. What comes off decides the real size of the job."),
-             ("Repair before paint", "We deal with failed caulk, split trim, soft fascia and rotted "
-              "sills first. Painting over rot buys one season."),
-             ("Prime the bare", "Every bare surface, and every knot and stain that will bleed."),
-             ("Finish coats", "Applied in the right temperature window, which in this climate is a "
-              "shorter list of days than people expect.")],
+      steps=[("We walk all four sides", "Including the parts you can only see from a ladder. The "
+              "rot at the end of a fascia board is invisible from the driveway, and it is not "
+              "something you want discovered halfway through the job."),
+             ("We agree a window, not a single day", "Exteriors run on the weather. You get a "
+              "range of days rather than a promise of one, and if it moves you hear about it "
+              "from us rather than wondering where everybody is."),
+             ("We set up around your house", "Plants covered, walkways kept clear, and ladders "
+              "and staging placed where they will not trap your cars in the driveway. Your doors "
+              "and windows stay usable while the work runs."),
+             ("The work itself", "Washing, scraping, repairs, caulk, primer, then finish coats, "
+              "in that order. What each of those actually involves is set out further down this "
+              "page, because that is where the entire price sits."),
+             ("We walk it with you at the end", "Round the house together, and you point at "
+              "anything you are not happy with while we are still set up to put it right.")],
       price_drivers=[
         ("Stories", "A one story and a three story are not the same job at the same square footage. "
          "Access, staging and ladder time scale faster than surface area does."),
@@ -1699,36 +1827,80 @@ SERVICES = [
       related=["interior-painting", "drywall-and-repair", "remodeling"]),
 
  dict(slug="cabinet-refinishing", nav="Cabinets", card="Cabinet refinishing", hero="hero-cabinets",
-      title="Kitchen Cabinet Painting, Bridgeview | Colors Your Way USA",
-      desc=("Kitchen cabinet painting and refinishing across Chicago's south side and the south "
-            "suburbs. Doors off, degreased, sanded, sprayed and rehung. Call "
-            + PHONE_DISPLAY + "."),
-      h1="Cabinet refinishing, without buying a new kitchen.",
-      lede=("If the boxes are solid and the layout works, the doors are the problem, not the kitchen. "
-            "Refinishing keeps the boxes, the layout and the countertops, and changes the thing you "
-            "actually look at."),
+      title="Kitchen Cabinet Painting, Chicagoland | Colors Your Way",
+      desc=("Kitchen cabinet painting and refinishing across Chicago and the south suburbs. Doors "
+            "off, degreased, primed, sprayed and rehung. Call " + PHONE_DISPLAY + "."),
+      h1="Kitchen cabinet refinishing, before you pay for a whole new kitchen.",
+      lede=("The question almost everybody asks first is whether the kitchen has to be replaced. "
+            "Usually it does not. If the boxes are solid and the layout still works for you, the "
+            "doors are what you are unhappy with, and doors can be taken off, degreased, primed "
+            "and sprayed. You keep the layout, the boxes and the countertops, and you change the "
+            "part you actually look at. Kitchens across Chicago and the south and southwest "
+            "suburbs."),
       formhead="Get a cabinet quote",
-      formsub="Send a photo of the kitchen and the door style.",
+      formsub="A photo of the kitchen tells us most of it.",
+      situations=[
+        ("You do not hate the kitchen, you hate the color",
+         "Honey oak, 1990s cherry, a white that has gone yellow above the stove. If the layout "
+         "still works, that is a paint problem, not a kitchen problem, and it is a fraction of "
+         "the money."),
+        ("You have a quote for new cabinets and it made your eyes water",
+         "Put the refinishing number next to it before you decide. Sometimes new really is the "
+         "right call. You should be choosing between two numbers rather than guessing at one."),
+        ("The doors are peeling or lifting at the edges",
+         "Thermofoil that has started to delaminate will not take paint, and we will tell you "
+         "that instead of spraying it anyway. That is a door replacement, and the boxes can "
+         "usually still stay."),
+        ("You want to change the handles too",
+         "New handles normally mean new holes and old holes filled. That has to happen before "
+         "the finish goes on, so it is worth saying at the walk-through rather than after.")],
+      prep_intro=("A cabinet finish is the easiest job in this trade to make look perfect for six "
+                  "weeks and the hardest one to make last for years. The whole difference is "
+                  "preparation, and one step in particular."),
+      prep=[
+        ("Degreasing",
+         "A kitchen carries years of cooking film that you cannot see and can definitely feel. "
+         "If it is not washed off, nothing sticks to it, whatever gets sprayed on top. This is "
+         "the single most common reason a cabinet job peels inside a year."),
+        ("Doors off and numbered",
+         "Every door and drawer front comes off and gets labeled, with its hinges bagged to it. "
+         "Painting doors while they are still hanging is faster and it always shows."),
+        ("Sanding and filling",
+         "The factory finish gets scuffed so the primer has something to hold on to, and dents "
+         "and old hardware holes get filled while the doors are flat."),
+        ("A bonding primer, not wall primer",
+         "Cabinets need a primer built to grip a finished factory surface. Wall primer is not "
+         "that, and wall primer is what is in the bucket on a cheap cabinet job."),
+        ("Sprayed, then left to harden",
+         "Sprayed, so there is no brush texture on a surface your hand is on every day. Then "
+         "left alone long enough to cure before anything gets hung back up and handled.")],
+      cheap=("The fast cabinet job is a quick scuff and two coats of wall paint over the grease, "
+             "brushed on with the doors still hanging. It photographs beautifully. Then the doors "
+             "either side of the stove go tacky, the edges by the handles wear through to the old "
+             "color, and a year later you have a kitchen that looks worse than the one you "
+             "started with and is harder to put right. Ask any cabinet quote two questions: how "
+             "do you degrease, and which primer are you using."),
       inc=["Doors and drawer fronts removed, numbered and worked off site or in a controlled space",
            "Degreasing, which is the step that decides whether the finish sticks",
            "Sanding, filling and a bonding primer made for cabinets",
            "Sprayed finish coats, not brush marks",
            "Hardware refitted, or new hardware fitted if you are changing it",
            "Boxes and face frames done in place"],
-      steps=[("Look at the boxes first", "If the carcasses are sound, refinishing makes sense. If they "
-              "are falling apart or the layout is wrong, you are better off being told that than being "
-              "sold a finish on top of a bad box."),
-             ("Doors off and labeled", "We take every door and drawer front off and number it so it "
-              "goes back exactly where it came from. Hinges and hardware bagged with it."),
-             ("Degrease, then sand", "A kitchen has years of cooking film on it, and we take it off "
-              "before anything else. Skipping the degreasing is the single most common reason a "
-              "cabinet job peels within a year."),
-             ("Bonding primer", "Cabinets need a primer built to stick to a finished factory surface. "
-              "Wall primer is not it."),
-             ("Spray the finish", "Sprayed, so there is no brush texture on a surface your hand touches "
-              "every day."),
-             ("Cure, then rehang", "The finish needs time before it is handled. Rushing this is how "
-              "fingerprints end up permanent.")],
+      steps=[("We look at the boxes first", "If the carcasses are sound, refinishing makes sense. "
+              "If they are falling apart or the layout is wrong, you are better off being told "
+              "that than being sold a finish on top of a bad box."),
+             ("You pick the color and the sheen", "Sheen matters more on a cabinet than it does "
+              "on a wall, because your hands are on it. Worth looking at the real thing rather "
+              "than deciding off a paper chip."),
+             ("The doors come off, and your kitchen keeps working", "You lose the doors, not the "
+              "kitchen. The boxes, the sink and the appliances all stay usable. Move anything you "
+              "use daily out of the cupboards before day one and life is much easier."),
+             ("The work happens", "Degreasing, sanding, filling, bonding primer and sprayed "
+              "finish coats. That sequence is written out further down this page, because it is "
+              "the whole difference between a cabinet job that lasts and one that does not."),
+             ("Everything goes back where it came from", "Numbered, so each door returns to its "
+              "own opening, hinges adjusted and handles refitted. Then go easy on it for a while "
+              "while the finish finishes hardening.")],
       price_drivers=[
         ("How many doors and drawers", "Cabinets are counted, not measured by kitchen. Two kitchens of "
          "the same size can have very different door counts."),
@@ -1763,31 +1935,75 @@ SERVICES = [
 
  dict(slug="drywall-and-repair", nav="Drywall &amp; repair", card="Drywall and repair",
       hero="hero-drywall",
-      title="Drywall Repair, Bridgeview IL | Colors Your Way USA",
-      desc=("Drywall and plaster repair with the painting that goes over it. Cracks, holes, "
-            "water damage and texture matching, Chicago and the south suburbs. "
+      title="Drywall Repair, Chicago and South Suburbs | Colors Your Way",
+      desc=("Drywall and plaster repair with the painting that goes over it. Cracks, holes, water "
+            "damage and texture matching, Chicago and the south suburbs. "
             + PHONE_DISPLAY + "."),
-      h1="Drywall and plaster repair, and the paint that goes over it.",
-      lede=("Cracks, holes, nail pops, water stains, failed tape joints and the ceiling that came "
-            "down after the bathroom leaked. Repair and paint are one job here, which is not true of "
-            "every company you will call."),
+      h1="The crack that keeps coming back, and the repair that stops it.",
+      lede=("You have filled it twice and it has opened twice. Or there is a hole behind a door, "
+            "or a brown ring on the ceiling from a leak that got fixed last year. We do drywall "
+            "and plaster repair across Chicago and the south and southwest suburbs, we match the "
+            "texture, and we prime and paint it so the wall reads as one surface again. That "
+            "last part is not standard. Plenty of drywall crews leave you a bare patch and "
+            "another phone call to make."),
       formhead="Get a repair quote",
-      formsub="A photo of the damage usually tells us most of it.",
+      formsub="A photo of the damage tells us most of it.",
+      situations=[
+        ("The crack keeps coming back",
+         "Filling it a third time will not hold. A crack that reopens in the same place is "
+         "movement, and it needs taping across the joint rather than another skim of filler. "
+         "Different fix, and it is the one that lasts."),
+        ("Something went through the wall",
+         "A doorknob, a moving day, a foot. A hole is the straightforward one. It gets cut back "
+         "to solid board, patched, taped, textured and painted."),
+        ("There is a stain on the ceiling from an old leak",
+         "Paint on its own will not cover it. Water stains bleed back through, sometimes months "
+         "later. It needs a stain blocking primer, and if the board has gone soft it needs "
+         "replacing rather than coating."),
+        ("Your house has plaster, not drywall",
+         "A lot of the older houses around here do. Plaster over lath repairs differently and "
+         "takes longer, and anybody quoting it as drywall has not really looked at it.")],
+      prep_intro=("The visible part of a repair takes about an hour. Whether it disappears or "
+                  "stares at you from across the room forever is decided by everything around "
+                  "that hour."),
+      prep=[
+        ("Working out why it happened",
+         "Settlement, a leak and a failed tape joint all look similar on the wall and all need "
+         "different answers. Patch the wrong one and you are doing it again next year."),
+        ("Cutting back to solid",
+         "Soft, wet or crumbling material comes out. Patching over it just moves the problem a "
+         "few months down the calendar."),
+        ("Building the compound up in coats",
+         "Thin coats, each one dry and sanded before the next goes on. Filled in one go is how "
+         "you get a bulge with a shadow around it."),
+        ("Matching the texture",
+         "Knockdown, orange peel and hand troweled finishes all have to be matched. This is the "
+         "step that decides whether you can pick out the repair from the doorway."),
+        ("Priming, then blending",
+         "New compound drinks paint differently from the wall around it. With no primer and no "
+         "blend, the patch shows up as a dull shape under the finish coat.")],
+      cheap=("The cheap repair is filler, one pass, no tape, no texture and paint straight over "
+             "it. It vanishes while the compound is still damp and comes back as a matte outline "
+             "as soon as it dries, by which point whoever did it has gone. If a quote does not "
+             "mention matching the texture or priming the patch, it is a quote for half a job."),
       inc=["Cracks, holes, nail pops and failed tape joints",
            "Water damaged drywall and ceilings, once the leak itself is fixed",
            "Plaster repair, which is a different job from drywall and common in the older housing here",
            "Texture matching so the patch does not read as a patch",
            "Priming and painting the repair, and blending it into the rest of the wall"],
-      steps=[("Find out why", "A crack that keeps coming back is telling you something. Settlement, a "
-              "leak and a failed joint all look similar and need different answers."),
-             ("Cut back to solid", "Damaged material comes out. Patching over soft or wet board just "
-              "moves the problem a few months down the road."),
-             ("Patch and tape", "New board, tape, and compound built up in coats rather than filled in "
-              "one go."),
-             ("Match the texture", "This is the step that decides whether the repair disappears. An "
-              "unmatched texture is visible from across the room forever."),
-             ("Prime and paint", "The repair gets primed, then painted, then blended out so the wall "
-              "reads as one surface.")],
+      steps=[("Send us a photo first", "A picture of the crack, the hole or the stain usually "
+              "tells us whether this is an hour, a morning or a whole day, and whether it needs "
+              "anything more than a repair. It saves everybody a trip."),
+             ("We contain the room", "Sanding compound makes a fine dust that finds its way into "
+              "every room in the house. Plastic goes up, floors get covered and the vents in the "
+              "work area get taped off before any sanding starts."),
+             ("The repair, built up in coats", "Cut back, patched, taped and built up. Compound "
+              "has to dry between coats, so most repairs are two shorter visits rather than one "
+              "long day. What that involves is set out further down this page."),
+             ("Texture, then paint", "The texture gets matched, then the repair is primed, "
+              "painted and blended out so the wall reads as one surface again."),
+             ("We clean up properly", "Drywall dust is the entire reputation of this job. "
+              "Vacuumed and wiped down, not swept into the air and left.")],
       price_drivers=[
         ("How many separate repairs", "Ten small patches in one room is a very different job from one "
          "large one, and usually a bigger one."),
@@ -1821,16 +2037,62 @@ SERVICES = [
       related=["interior-painting", "remodeling", "cabinet-refinishing"]),
 
  dict(slug="remodeling", nav="Remodeling", card="Remodeling and trades", hero="hero-remodeling",
-      title="Remodeling and Trades, Bridgeview IL | Colors Your Way USA",
+      title="Remodeling and Trades, Chicagoland | Colors Your Way USA",
       desc=("Carpentry, tile, flooring, subfloor repair, concrete, faux finishes and "
             "remodeling across Chicago's south side and the south suburbs. Call "
             + PHONE_DISPLAY + "."),
-      h1="When the paint is not the whole problem.",
-      lede=("Painting is the front door of this business and most of what we do. But a lot of jobs "
-            "turn out to be something else once you look properly, and this is where that gets "
-            "handled instead of handed to somebody you then have to chase."),
+      h1="When the job turns out to be more than paint.",
+      lede=("Plenty of jobs turn out to be something else once somebody looks underneath. The "
+            "bathroom needs painting, and the floor by the tub has a soft spot. The trim needs "
+            "repainting, and the sill behind it has gone. Most painters stop there and hand you "
+            "a list of people to call. We do the carpentry, the tile, the flooring, the "
+            "subfloors and the concrete as well, across Chicago and the south and southwest "
+            "suburbs, so the job keeps moving instead of sitting half finished while you chase "
+            "somebody else."),
       formhead="Ask about a bigger job",
       formsub="Tell us what you are actually looking at.",
+      situations=[
+        ("A painter has already told you it is not a painting job",
+         "That usually means rot, a soft floor, or a wall that has to be rebuilt before anything "
+         "can be coated. All of that is work we do, and it is the reason this page exists."),
+        ("You have been trying to get three trades to line up",
+         "Subfloor, then tile, then trim, then paint. Three companies and three calendars is why "
+         "that project has taken four months. One company is one calendar."),
+        ("It started as one room and grew",
+         "Bathrooms and kitchens do this constantly. The honest move is to look at all of it at "
+         "once and tell you the real size of the job at the quote, not on day two."),
+        ("You want to know whether it is even worth doing",
+         "Sometimes the answer is that the job belongs with a specialist, or that it is not "
+         "worth the money this year. If that is the true answer, you will hear it.")],
+      prep_intro=("On a remodel the surprises are never in the finish work. They are underneath "
+                  "it. So the part worth paying for is the looking, and that has to happen "
+                  "before the quote rather than after the demolition."),
+      prep=[
+        ("Protecting the rest of the house",
+         "Dust from tile and drywall work travels through a whole house through the return "
+         "vents. Doorways get sealed, the route in and out gets covered, and the vents in the "
+         "work area get taped off before anything gets broken up."),
+        ("Taking it apart carefully",
+         "Demolition looks like the fun part and it is where most of the accidental damage "
+         "happens. Tile comes off without wrecking the wall behind it, and trim that is going "
+         "back on comes off in one piece."),
+        ("Making the substrate right before the finish goes on",
+         "Tile laid over a soft or uneven subfloor cracks its grout inside a year, however good "
+         "the tile is. The floor gets made flat and solid first, and that is the part that never "
+         "shows up in a photograph of a finished bathroom."),
+        ("Dealing with the water first",
+         "In a bathroom or a basement, whatever is letting water in gets sorted out before "
+         "anything is closed up over it. Otherwise you are paying to bury the problem somewhere "
+         "you can no longer reach it."),
+        ("Prepping the new work for paint",
+         "New trim and new drywall need filling, caulking and priming before they take a finish "
+         "coat, exactly like any other paint job. Skipping that is why new work sometimes looks "
+         "worse than the old work next to it.")],
+      cheap=("On bigger jobs the low quote is usually the one that did not look underneath. It "
+             "is a real price for a smaller job than the one you have, and the difference comes "
+             "back as a change order once the floor is up and you have nowhere else to go. A "
+             "quote that tells you in advance what happens if there is rot is worth more than a "
+             "cheaper one that says nothing about it."),
       inc=["Carpentry: trim, casing, doors, sills, fascia and the rot behind the paint",
            "Tile: floors, walls, bathrooms, backsplashes",
            "Flooring and subfloors, including the soft spot under the tile that caused the problem",
@@ -1999,6 +2261,14 @@ def build_service(s, posts=()):
     inc = "".join("<li>" + x + "</li>" for x in s["inc"])
     steps = "".join("<li><strong>" + a + "</strong>" + b + "</li>" for a, b in s["steps"])
     drivers = "".join("<li><strong>" + a + "</strong>" + b + "</li>" for a, b in s["price_drivers"])
+    # The two homeowner-facing blocks. `situations` is the page's opening move:
+    # somebody arriving from a search does not want a definition of the trade,
+    # they want to see their own house described back to them. `prep` is the
+    # sale: preparation is the real difference between two quotes and almost no
+    # homeowner has been told how to judge it, so explaining it plainly is worth
+    # more than any claim this site is not allowed to make.
+    sits = "".join("<li><strong>" + a + ".</strong> " + b + "</li>" for a, b in s["situations"])
+    prep = "".join("<li><strong>" + a + "</strong>" + b + "</li>" for a, b in s["prep"])
     faqrows, faqld = faq(s["faq"])
     rel = "".join('<a class="pill" href="' + r + '.html">' + SERVICE_BY_SLUG[r]["card"] + '</a>'
                   for r in s["related"])
@@ -2009,67 +2279,90 @@ def build_service(s, posts=()):
     # own page, and the rest is one link to the hub that holds all of them.
     towns = "".join('<a class="pill" href="areas/' + q["slug"] + '.html">' + city_anchor(q) + '</a>'
                     for q in built_places()[:10])
-    towns += ('<a class="pill" href="areas/index.html"><strong>All ' +
-              str(len(built_places())) +
-              ' places and what is different about each &rarr;</strong></a>')
+    towns += ('<a class="pill" href="areas/index.html"><strong>See all ' +
+              str(len(built_places())) + ' towns we cover &rarr;</strong></a>')
     reads = post_links(s["slug"], posts)
     crumb_html, crumb_ld = breadcrumbs([("Home", "index.html"), (s["card"], fn)])
 
     html = head(s["title"], s["desc"], fn, s["hero"]) + header(fn)
     html += '<main id="main">\n' + crumb_html
-    html += hero(s["h1"], s["lede"], s["nav"] + " &middot; Bridgeview, IL", s["hero"],
+    html += hero(s["h1"], s["lede"], s["nav"] + " &middot; " + REGION_SHORT, s["hero"],
                  s["formhead"], s["formsub"], page=s["nav"] + " (" + fn + ")")
     html += ('<div class="strip"><div class="wrap"><ul>'
-             '<li>Bridgeview based</li><li>Owner run by ' + OWNER + '</li>'
+             '<li>' + REGION_LONG + '</li>'
+             '<li>Owned and run by ' + OWNER + ', based in ' + CITY + '</li>'
              '<li>Painting, carpentry, tile and flooring</li>'
-             '<li>No price without a walk-through</li></ul></div></div>\n')
+             '<li>We come and look before we quote</li></ul></div></div>\n')
 
-    html += ('<section>\n  <div class="wrap two-col">\n    <div>\n'
+    html += ('<section>\n  <div class="wrap narrow">\n'
+             '    <p class="eyebrow">Sound familiar</p>\n'
+             '    <h2>Most people call us for one of these reasons</h2>\n'
+             '    <p class="lede">If one of these is roughly your situation, you are in the '
+             'right place.</p>\n'
+             '    <ul class="ticks">' + sits + '</ul>\n  </div>\n</section>\n')
+
+    html += ('<section class="alt">\n  <div class="wrap two-col">\n    <div>\n'
              '      <p class="eyebrow">What is covered</p>\n'
              '      <h2>' + s["card"] + ', in full</h2>\n'
              '      <ul class="ticks">' + inc + '</ul>\n'
              '    </div>\n    ' + img(s["ba"][0][1]) + '\n  </div>\n</section>\n')
 
-    html += ('<section class="alt">\n  <div class="wrap narrow">\n'
+    html += ('<section>\n  <div class="wrap narrow">\n'
              '    <p class="eyebrow">How the job runs</p>\n'
-             '    <h2>The order it happens in</h2>\n'
+             '    <h2>What happens, in the order it happens</h2>\n'
              '    <ol class="nums">' + steps + '</ol>\n  </div>\n</section>\n')
+
+    # The prep section. This is the one thing on the page that changes how
+    # somebody reads every other quote they get, which is why it is written out
+    # at length instead of compressed into a bullet. It also does the job a
+    # testimonial would normally do on a contractor site, and this site is not
+    # allowed to have testimonials because there are none.
+    html += ('<section class="alt">\n  <div class="wrap narrow">\n'
+             '    <p class="eyebrow">The part you cannot see</p>\n'
+             '    <h2>What good preparation is, and why the cheap quote is cheap</h2>\n'
+             '    <p class="lede">' + s["prep_intro"] + '</p>\n'
+             '    <ol class="nums">' + prep + '</ol>\n'
+             '    <div class="callout"><h3>Where a cheap quote saves its money</h3><p>'
+             + s["cheap"] + '</p></div>\n'
+             '  </div>\n</section>\n')
 
     html += ('<section>\n  <div class="wrap">\n'
              '    <p class="eyebrow">Recent work</p>\n'
              '    <h2>Before and after</h2>\n'
-             '    <p class="lede">The only thing worth judging a painter on.</p>\n'
+             '    <p class="lede">A before and after pair of the same room is the only fair way '
+             'to judge a painter.</p>\n'
              '    ' + ba_gallery(s["ba"]) + '\n  </div>\n</section>\n')
 
     html += ('<section class="alt">\n  <div class="wrap narrow">\n'
              '    <p class="eyebrow">What moves the number</p>\n'
-             '    <h2>Why two quotes for the same room can look nothing alike</h2>\n'
-             '    <p class="lede">No price is published here, because a real number needs somebody '
-             'to stand in the room first. What can be published is what actually drives it, so you '
-             'can read any quote you get and know what you are looking at.</p>\n'
+             '    <h2>Why two quotes for the same job can look nothing alike</h2>\n'
+             '    <p class="lede">There are no prices on this site, because a real number needs '
+             'somebody standing in front of the work. What we can tell you is what actually '
+             'drives it, so you can read any quote you get and understand what you are looking '
+             'at.</p>\n'
              '    <ol class="nums">' + drivers + '</ol>\n'
-             '    <div class="callout"><h3>Ask every contractor the same three questions</h3>'
+             '    <div class="callout"><h3>Ask everybody who quotes you these three questions</h3>'
              '<p>What preparation is included. How many coats. What happens to the price if the '
-             'preparation turns out to be worse than it looks. The answers, more than the total, '
-             'are what tell you which quote is real.</p></div>\n'
+             'preparation turns out worse than it looks. The answers tell you far more than the '
+             'total at the bottom does.</p></div>\n'
              '  </div>\n</section>\n')
 
     html += ('<section>\n  <div class="wrap narrow">\n'
              '    <p class="eyebrow">Questions</p>\n'
-             '    <h2>About ' + s["card"].lower() + '</h2>\n'
+             '    <h2>What people ask about ' + s["card"].lower() + '</h2>\n'
              '    ' + faqrows +
-             '    <p class="eyebrow" style="margin-top:2rem">Also does</p>\n'
+             '    <p class="eyebrow" style="margin-top:2rem">We also do</p>\n'
              '    <div class="pills">' + rel + '</div>\n'
-             '    <p class="eyebrow" style="margin-top:1.6rem">Working in</p>\n'
+             '    <p class="eyebrow" style="margin-top:1.6rem">Towns closest to the shop</p>\n'
              '    <div class="pills">' + towns + '</div>\n'
              '  </div>\n</section>\n')
 
     if reads:
         html += ('<section class="alt">\n  <div class="wrap narrow">\n'
-                 '    <p class="eyebrow">Worth reading first</p>\n'
-                 '    <h2>Written out in more detail</h2>\n'
-                 '    <p class="lede">The questions people ask on the phone, answered properly '
-                 'and with the sources named.</p>\n'
+                 '    <p class="eyebrow">Worth a read first</p>\n'
+                 '    <h2>The longer answers</h2>\n'
+                 '    <p class="lede">The same questions people ask us on the phone, written out '
+                 'properly, with every figure sourced.</p>\n'
                  '    ' + reads + '\n'
                  '    <p style="margin-top:18px"><a href="blog/index.html">All notes &rarr;</a></p>\n'
                  '  </div>\n</section>\n')
@@ -2092,77 +2385,134 @@ def build_home(posts=()):
                   '<span class="more">See what is involved &rarr;</span></div></a>')
     cards += ('<a class="card" href="areas/index.html">' + img("hero-service-area") +
               '<div class="body"><h3>Where we work</h3><p>Chicago and the south and southwest '
-              'suburbs, with what is actually different about the housing in each one.</p>'
-              '<span class="more">See the towns &rarr;</span></div></a>')
+              'suburbs. Find your town and see what the houses around there are usually '
+              'like.</p>'
+              '<span class="more">Find your town &rarr;</span></div></a>')
 
     faqrows, faqld = faq([
-      ("What towns do you cover?",
-       "Chicago and the south and southwest suburbs. Bridgeview is the base, at " + STREET + " "
-       "The close ring from there is Oak Lawn, Burbank, Evergreen Park, Palos Hills, Palos "
-       "Heights, Hickory Hills, Chicago Ridge, Worth, Justice, Willow Springs, Summit and Bedford "
-       "Park. On the city side it is the south side, Beverly and Mount Greenwood in particular. "
-       "South of that is Oak Forest, Alsip, Midlothian, Blue Island and Crestwood, and further "
-       "out again Orland Park, Tinley Park, Homer Glen, Mokena, Frankfort and Lemont, which are "
-       "worth a conversation about scheduling before anybody drives. There is a page explaining "
-       "what is different about each one."),
+      ("Do you cover my town?",
+       "Chicago and the south and southwest suburbs. The shop is in Bridgeview, so the close ring "
+       "is Oak Lawn, Burbank, Evergreen Park, Palos Hills, Palos Heights, Hickory Hills, Chicago "
+       "Ridge, Worth, Justice and Summit, and we go out as far as Orland Park, Tinley Park, "
+       "Mokena, Frankfort and Lemont. On the city side it is the south and southwest sides. There "
+       "is a page for every town we cover, and if yours is not on it, call and ask rather than "
+       "assume."),
+      ("How much is this going to cost?",
+       "That depends on things nobody can see in a photograph, which is why there are no prices "
+       "on this site. On an interior it comes down to the condition of what is already on the "
+       "wall and how much trim there is. Send us photos and we will tell you what to expect, then "
+       "we come and look and you get a real number."),
+      ("Do you do small jobs?",
+       "Yes. One room, one wall, one ceiling, a patch, a door. Close to the shop a small repair "
+       "is worth a trip on its own. Further out it is worth asking, and you will get a straight "
+       "answer about whether the drive makes sense rather than a quiet no."),
       ("Do you do more than painting?",
-       "Yes, and it is unusual around here. Alongside interior and exterior painting there is "
-       "carpentry, tile, flooring, subfloor repair, concrete, faux finishes and general remodeling. "
-       "The point is not a longer list. It is that a job does not stop when it turns out to need "
-       "more than paint."),
-      ("How do you price a job?",
-       "After a walk-through. No number is published on this site and no number gets given over the "
-       "phone as a final price, because the two things that decide an interior job are the condition "
-       "of what is already on the wall and how much trim there is, and neither shows up in a photo. "
-       "Photos are still useful for telling you what to expect before the visit."),
-      ("Who does the work?",
-       "Our own crew, run by the owner. " + OWNER + " is a long-time tradesman, he owns the "
-       "company, he walks and prices the job himself, and he stays on it while it runs. There is "
-       "no branch office and no commission salesperson between you and the people painting."),
+       "Yes, and that is unusual around here. Alongside interior and exterior painting we do "
+       "carpentry, tile, flooring, subfloor repair, concrete, faux finishes and general "
+       "remodeling. The point is not a longer list. It is that your job does not stop dead when "
+       "it turns out to need more than paint."),
+      ("Who will actually be in my house?",
+       "Our own crew, run by the owner. " + OWNER + " owns the company, walks and prices the job "
+       "himself, and stays on it while it runs. There is no branch office and no salesperson on "
+       "commission standing between you and the people doing the painting."),
       ("Are you insured?",
-       "Insurance and any local registration details are listed on this site as soon as the "
-       "paperwork is supplied. Nothing is claimed here that has not been produced. Ask on the phone "
-       "and you will get a straight answer."),
-      ("Do you have reviews I can read?",
-       "Not yet. This is a business that has run on word of mouth and a van, and no reviews have "
-       "been collected. Rather than fill this page with something invented, the space is left "
-       "empty until there are real ones to put in it."),
+       "Ask on the phone and you will get a straight answer. Insurance and any local registration "
+       "details go on this website the moment the paperwork is handed over, and not a day before. "
+       "Nothing is claimed here that has not been produced."),
+      ("Can I read your reviews?",
+       "Not yet. This business has run on word of mouth and a van, and no reviews have been "
+       "collected. Rather than fill the page with something invented, the space is left empty "
+       "until there are real ones to put in it."),
     ])
 
-    html = head("House Painters in Bridgeview, IL | " + BRAND,
-                "Painter and remodeler based in Bridgeview, covering Chicago and the south "
-                "suburbs. Interior, exterior, cabinets, drywall, carpentry and tile. "
-                "Call " + PHONE_DISPLAY + ".",
+    # The home page owns the REGIONAL head terms. It used to be scoped to
+    # Bridgeview, a village of 16,721 people, while 76 city pages underneath it
+    # covered all of Chicagoland. The address is still Bridgeview and it is
+    # still on this page, in the strip, the footer and the LocalBusiness schema.
+    # It is the base, not the market.
+    html = head("House Painters, Chicago and South Suburbs | Colors Your Way",
+                "Painting and remodeling across Chicago and the south and southwest suburbs. "
+                "Interior, exterior, cabinets, drywall, carpentry and tile. Call "
+                + PHONE_DISPLAY + ".",
                 "index.html", "og-home")
     html += header("index.html")
     html += '<main id="main">\n'
-    html += hero("Bridgeview painters who can finish the whole job.",
-                 "Interior and exterior painting, cabinets and drywall, plus the carpentry, tile "
-                 "and flooring that usually gets handed to somebody else. We are an owner-run "
-                 "company: " + OWNER + " walks the job, prices it, and runs the crew that does "
-                 "it.",
-                 "Painting &amp; remodeling &middot; Bridgeview, IL", "og-home",
-                 "Ask for a quote", "Tell us the town and what needs doing.",
+    html += hero("House painters for Chicago and the south suburbs. Call and we come look.",
+                 "Inside or outside, one room or the whole house, plus the cabinets, drywall, "
+                 "carpentry, tile and flooring most painters hand off to somebody else. Call "
+                 + PHONE_DISPLAY + " and we will arrange a time to come and see the job. Nobody "
+                 "gets a number until somebody has stood in front of the work. We are owner run "
+                 "out of our own shop in Bridgeview, and " + OWNER + " walks and prices every "
+                 "job himself.",
+                 "Painting &amp; remodeling &middot; " + REGION_LONG, "og-home",
+                 "Ask for a quote", "Tell us your town and what needs doing.",
                  page="Home (index.html)")
     html += ('<div class="strip"><div class="wrap"><ul>'
-             '<li>Based at ' + STREET + ', Bridgeview</li>'
-             '<li>Owner run, not a franchise office</li>'
+             '<li>' + REGION_LONG + '</li>'
+             '<li>Our shop is at ' + STREET + ', ' + CITY + '</li>'
+             '<li>Owner run, not a franchise branch</li>'
              '<li>Painting, carpentry, tile, flooring, concrete</li>'
-             '<li>Every job quoted after a walk-through</li></ul></div></div>\n')
+             '<li>We come and look before we quote</li></ul></div></div>\n')
 
     html += ('<section>\n  <div class="wrap">\n'
              '    <p class="eyebrow">What we do</p>\n'
-             '    <h2>Start with what you are looking at</h2>\n'
-             '    <p class="lede">Most calls are one of these five. Each page says what is '
-             'included, the order the work happens in, and what makes one quote different from '
+             '    <h2>Start with whatever is bothering you</h2>\n'
+             '    <p class="lede">Nearly every call is one of these. Each page tells you what is '
+             'included, what happens on the day, and what makes one quote different from '
              'another.</p>\n'
              '    <div class="cards">' + cards + '</div>\n  </div>\n</section>\n')
+
+    # How a quote happens. This is the single most asked question on a
+    # contractor site and it was previously answered only inside an FAQ toggle
+    # halfway down the page. It is a decision-making step, so it goes above the
+    # photographs.
+    html += ('<section class="alt">\n  <div class="wrap narrow">\n'
+             '    <p class="eyebrow">How it works</p>\n'
+             '    <h2>How you get a price from us</h2>\n'
+             '    <p class="lede">Four steps, no sales appointment, and nothing you have to sit '
+             'through.</p>\n'
+             '    <ol class="nums">'
+             '<li><strong>You call or send the form.</strong> One number, ' + PHONE_DISPLAY + ', '
+             'and it goes to the company rather than a call center. Texting a photo of the room '
+             'or the front of the house is the fastest thing you can do.</li>'
+             '<li><strong>We come and look at it.</strong> Somebody stands in the room, counts '
+             'the doors and the trim runs, and looks at the condition of what is already on the '
+             'wall. There is no honest way to price this work off a photograph, and a number '
+             'given without a visit is a guess made in the contractor&rsquo;s favor.</li>'
+             '<li><strong>You get the number and what sits behind it.</strong> What is included, '
+             'how many coats, what the preparation is, and what happens to the price if the '
+             'preparation turns out worse than it looks. That last line is the one to compare '
+             'between quotes.</li>'
+             '<li><strong>We book a date and do the work.</strong> You know who is coming and '
+             'roughly how many days it takes. The owner runs the job, so if something changes you '
+             'hear it from the person responsible for it.</li>'
+             '</ol>\n  </div>\n</section>\n')
+
+    html += ('<section>\n  <div class="wrap two-col">\n    <div>\n'
+             '      <p class="eyebrow">On the day</p>\n'
+             '      <h2>What it is like having us working in your house</h2>\n'
+             '      <ul class="ticks">'
+             '<li><strong>You can carry on living there.</strong> We work room by room. Furniture '
+             'moves to the middle and gets covered, floors get protected, and doors stay shut so '
+             'the dust stays where the work is.</li>'
+             '<li><strong>You get your house back every evening.</strong> Tools and materials get '
+             'packed up at the end of the day rather than left across your living room for a '
+             'week.</li>'
+             '<li><strong>You know who is coming.</strong> Our own crew, run by the owner, not a '
+             'different subcontracted van every morning.</li>'
+             '<li><strong>The room goes back together.</strong> Furniture back where it was, '
+             'hardware and switch plates back on, floors clear. Putting the room back is part of '
+             'the job, not a favor.</li>'
+             '<li><strong>If you hate it, say so on day one.</strong> Colors look different on a '
+             'wall than they do on a chip. Tell us early and it is a small conversation. Tell us '
+             'at the end and it is a repaint.</li>'
+             '</ul>\n    </div>\n    ' + img("prep-tape") + '\n  </div>\n</section>\n')
 
     html += ('<section class="alt" id="work">\n  <div class="wrap">\n'
              '    <p class="eyebrow">Recent work</p>\n'
              '    <h2>Before and after</h2>\n'
-             '    <p class="lede">A painter should be judged on pairs of photos of the same room, '
-             'and nothing else.</p>\n'
+             '    <p class="lede">Before and after pairs of the same room are the only fair way '
+             'to judge a painter.</p>\n'
              '    ' + ba_gallery([("ba1-before", "ba1-after", "Interior repaint"),
                                   ("ba2-before", "ba2-after", "Exterior, siding and trim"),
                                   ("ba3-before", "ba3-after", "Kitchen cabinets refinished"),
@@ -2170,26 +2520,31 @@ def build_home(posts=()):
              '\n  </div>\n</section>\n')
 
     html += ('<section>\n  <div class="wrap two-col">\n    <div>\n'
-             '      <p class="eyebrow">Why people call</p>\n'
-             '      <h2>Three things that are true here and are not true everywhere</h2>\n'
+             '      <p class="eyebrow">Why people call us</p>\n'
+             '      <h2>What a local owner gives you that a franchise branch cannot</h2>\n'
              '      <ul class="ticks">'
-             '<li><strong>The owner runs the job, not a salesperson.</strong> ' + OWNER + ' '
-             'walks the job, prices the job and stays on it while our crew works. Nothing gets '
-             'lost between a commission salesman and whoever turns up on the day.</li>'
-             '<li><strong>The trade list is deep enough to finish.</strong> Painting, carpentry, '
-             'tile, flooring, subfloors, concrete and faux finishes. When a bathroom repaint turns '
-             'out to be a subfloor, it does not turn into a search for a second contractor.</li>'
-             '<li><strong>One geography, worked properly.</strong> The shop is in Bridgeview, '
-             'about where the city stops and the southwest suburbs start, and the work is the '
-             'south side of Chicago and the towns south and southwest of it. Not the whole metro, '
-             'and not a franchise map running from Naperville to Joliet.</li>'
-             '</ul>\n    </div>\n    ' + img("prep-tape") + '\n  </div>\n</section>\n')
+             '<li><strong>The person who quotes it is the person running it.</strong> ' + OWNER +
+             ' owns the company. He walks the job, prices it, and stays on it while our crew '
+             'works. Nothing gets promised at your kitchen table by a salesman on commission and '
+             'then forgotten by the start date.</li>'
+             '<li><strong>We can finish the whole job.</strong> Painting, carpentry, tile, '
+             'flooring, subfloors, concrete and faux finishes. When a bathroom repaint turns out '
+             'to be a soft subfloor, it does not turn into a month of hunting for a second '
+             'contractor.</li>'
+             '<li><strong>We are actually from here.</strong> The shop is in Bridgeview, about '
+             'where the city stops and the southwest suburbs start. We work the south side and '
+             'the towns south and southwest of it. Not the whole metro, and not a territory map '
+             'drawn up in another state.</li>'
+             '<li><strong>If something is wrong there is one person to tell.</strong> One number, '
+             'one owner, no branch manager to be escalated to. That is the whole of it.</li>'
+             '</ul>\n    </div>\n    ' + img("tools-floor") + '\n  </div>\n</section>\n')
 
     html += ('<section class="alt">\n  <div class="wrap narrow">\n'
              '    <p class="eyebrow">Straight answers</p>\n'
-             '    <h2>License, insurance and guarantee</h2>\n'
-             '    <p class="lede">Most contractor sites carry a badge claiming every credential '
-             'going, with no numbers behind any of it. Here is the honest version.</p>\n'
+             '    <h2>License, insurance and guarantee: the honest version</h2>\n'
+             '    <p class="lede">Most contractor websites carry a row of badges with nothing '
+             'behind any of them. Here is what we can and cannot show you, and what the word '
+             '"licensed" actually means for a painter in Illinois.</p>\n'
              + '    ' + trust_row() + '\n'
              '    <div class="callout"><h3>Why these say "to supply"</h3>'
              '<p>Because the real values have not been handed over yet, and putting a plausible '
@@ -2211,7 +2566,7 @@ def build_home(posts=()):
 
     html += ('<section>\n  <div class="wrap narrow">\n'
              '    <p class="eyebrow">Reviews</p>\n'
-             '    <h2>There are no reviews on this page yet</h2>\n'
+             '    <h2>We do not have reviews to show you yet</h2>\n'
              # Do NOT write "has never collected a single online review". The brief
              # records "Website: none" and lists review capture as a system still to
              # be built, which supports "none here yet". It does not support an
@@ -2227,7 +2582,8 @@ def build_home(posts=()):
              '  </div>\n</section>\n')
 
     html += ('<section class="alt">\n  <div class="wrap narrow">\n'
-             '    <p class="eyebrow">Questions</p>\n    <h2>Before you call</h2>\n'
+             '    <p class="eyebrow">Questions</p>\n'
+             '    <h2>The things people ask us before they call</h2>\n'
              '    ' + faqrows + '  </div>\n</section>\n')
 
     # The home page is the top of the pillar. It has to reach the cluster
@@ -2244,8 +2600,8 @@ def build_home(posts=()):
                     + BRAND + ' price. Every job is quoted after a walk-through.</p>')
         html += ('<section>\n  <div class="wrap narrow">\n'
                  '    <p class="eyebrow">Notes</p>\n'
-                 '    <h2>What people ask before they call</h2>\n'
-                 '    <p class="lede">Written out properly, with every price figure named as a '
+                 '    <h2>A few things worth reading before you decide</h2>\n'
+                 '    <p class="lede">Written out at length, with every price figure named as a '
                  'published market range and its source given.</p>\n'
                  '    <ul class="reads">' + latest + '</ul>\n' + note +
                  '    <p style="margin-top:18px"><a href="blog/index.html">All notes &rarr;</a>'
@@ -2254,9 +2610,10 @@ def build_home(posts=()):
     html += cta()
     html += "</main>\n" + footer()
     html += ld_json([website_ld(),
-                     webpage_ld("index.html", BRAND + ", house painters in Bridgeview, IL",
-                                "Painting and remodeling contractor serving Chicago and the "
-                                "south suburbs from Bridgeview, Illinois."),
+                     webpage_ld("index.html",
+                                BRAND + ", house painters for Chicago and the south suburbs",
+                                "Painting and remodeling contractor covering " + REGION_LONG +
+                                ", working from its own shop in Bridgeview, Illinois."),
                      faqld])
     html += confirm_comment() + "</body>\n</html>\n"
     write("index.html", html)
@@ -2321,70 +2678,111 @@ def build_contact():
                   'ask.</span></p>')
 
     faqrows, faqld = faq([
-      ("What is the fastest way to get an answer?",
-       "The phone. " + PHONE_DISPLAY + ". There is one number and it goes to " + OWNER + ". If you "
-       "would rather text, texting photos of the room or the front of the house is genuinely the "
-       "most useful thing you can send."),
-      ("What should I have ready?",
-       "The town, roughly what needs doing, and an idea of the age of the house. For an interior, "
-       "how many rooms and whether you want the trim and ceilings included. For an exterior, how "
-       "many stories and what the siding is. None of it has to be exact."),
-      ("Will I get a price on the phone?",
-       "You will get a useful idea of what is involved and what tends to move the number. You will "
-       "not get a final price, because the two things that decide an interior job are the condition "
-       "of what is already on the wall and how much trim there is, and neither of those is visible "
-       "over the phone."),
+      ("What is the fastest way to reach you?",
+       "The phone. " + PHONE_DISPLAY + ". There is one number and it goes to " + OWNER + ". If "
+       "you would rather text, then texting photos of the room or the front of the house is "
+       "genuinely the most useful thing you can send us."),
+      ("What should I have ready when I call?",
+       "Your town, roughly what needs doing, and a rough idea of how old the house is. For an "
+       "interior, how many rooms and whether you want the trim and ceilings included. For an "
+       "exterior, how many stories and what the siding is made of. None of it has to be exact."),
+      ("What if I am not sure what I need?",
+       "Then just describe what is bothering you and we will work out what the job actually is. "
+       "Plenty of calls start with somebody apologizing for not knowing the right word for "
+       "something. It does not matter in the slightest."),
+      ("Will I get a price over the phone?",
+       "You will get a useful idea of what is involved and what tends to move the number. You "
+       "will not get a final price. The two things that decide an interior job are the condition "
+       "of what is already on the wall and how much trim there is, and neither of those can be "
+       "judged down a phone line."),
       ("Do you charge to come out and look?",
-       "Ask when you call. It is a fair question and you should get a clear answer before anybody "
-       "drives out, not after."),
+       "Ask when you call. It is a fair question and you should get a clear answer before "
+       "anybody drives out, not afterwards."),
+      ("Can I come to the shop?",
+       "Call first. It is a working address in Bridgeview rather than a showroom, so there is "
+       "not always somebody there to meet you."),
     ])
 
     crumb_html, crumb_ld = breadcrumbs([("Home", "index.html"), ("Contact", fn)])
 
-    html = head("Contact a Bridgeview, IL Painter | " + BRAND,
+    html = head("Contact a Chicagoland Painting Contractor | Colors Your Way",
                 "Call " + PHONE_DISPLAY + " or text photos of the job. " + BRAND + ", "
                 + STREET + ", " + CITY + ", " + REGION + " " + POSTAL + ". Painting and "
                 "remodeling, Chicago and south suburbs.",
                 fn, "hero-contact")
     html += header(fn)
     html += '<main id="main">\n' + crumb_html
-    html += hero("Tell us what you are looking at.",
-                 "One number, and it goes to " + OWNER + ". Photos help more than a long "
-                 "description, so if you are texting, send pictures of the room, the wall or the "
-                 "front of the house.",
-                 "Contact &middot; Bridgeview, IL", "hero-contact",
-                 "Send the details", "Or just call. The phone is faster.",
+    # The phone goes in the hero, at the top, and it is the biggest thing on the
+    # page. This is a phone business with one number and no CRM, so the most
+    # useful thing this page can do is put that number at thumb height on a
+    # phone screen before anything else loads. Sized with clamp() inline rather
+    # than in the stylesheet because it is the only element on the site that
+    # needs it, and a new CSS rule would mean a cache-busting version bump.
+    big_phone = ('<a href="tel:' + PHONE_E164 + '" style="display:block;margin:.6rem 0 .5rem;'
+                 'font-size:clamp(2.1rem,1.2rem + 5vw,3.4rem);font-weight:800;line-height:1.05;'
+                 'letter-spacing:-.02em;color:var(--blue-d);text-decoration:none">'
+                 + PHONE_DISPLAY + '</a>')
+    html += hero("Call us and tell us what you are looking at.",
+                 "One number, and it goes to " + OWNER + " rather than a call center. "
+                 + big_phone + " "
+                 "Calls and texts both. A photo of the room, the wall or the front of the house "
+                 "tells us more than anything you can type. We cover " + REGION_LONG + " from "
+                 "our shop in " + CITY + ".",
+                 "Contact &middot; " + REGION_SHORT, "hero-contact",
+                 "Rather type it out?", "Fill this in and we will call you.",
                  page="Contact (contact.html)")
 
+    html += ('<section class="alt">\n  <div class="wrap narrow">\n'
+             '    <p class="eyebrow">What happens next</p>\n'
+             '    <h2>What happens after you get in touch</h2>\n'
+             '    <ol class="nums">'
+             '<li><strong>We talk for a few minutes.</strong> Which town, what needs doing, and '
+             'roughly how old the house is. Nothing has to be exact and there is no script.</li>'
+             '<li><strong>You send photos if you have them.</strong> Text them to the same '
+             'number. Photos will not produce a final price, but they let us tell you what to '
+             'expect and let you tell us what is bothering you without writing an essay.</li>'
+             '<li><strong>We arrange a time to come and look.</strong> Somebody stands in the '
+             'room, or walks all four sides of the house. That is the only way anybody can price '
+             'this work honestly.</li>'
+             '<li><strong>You get a number, and what sits behind it.</strong> What is included, '
+             'how many coats, what the preparation is, and what happens to the price if the '
+             'preparation turns out worse than it looks.</li>'
+             '<li><strong>You decide, in your own time.</strong> There is no follow-up campaign '
+             'and nobody chasing you. If you want to think about it, think about it.</li>'
+             '</ol>\n  </div>\n</section>\n')
+
     html += ('<section>\n  <div class="wrap two-col">\n    <div>\n'
-             '      <p class="eyebrow">Reach us</p>\n      <h2>Direct</h2>\n'
-             '      <p style="font-size:1.5rem;font-weight:700;margin-bottom:1.2rem">'
+             '      <p class="eyebrow">Where we are</p>\n      <h2>The shop</h2>\n'
+             '      <p><strong>' + BRAND + '</strong><br>' + STREET + '<br>' + CITY + ', '
+             + REGION + ' ' + POSTAL + '</p>\n'
+             '      <p><strong>Phone and text</strong><br>'
              '<a href="tel:' + PHONE_E164 + '">' + PHONE_DISPLAY + '</a></p>\n'
-             '      <p><strong>Text photos to the same number.</strong><br>'
-             '<a href="sms:' + PHONE_E164 + '">' + PHONE_DISPLAY + '</a></p>\n'
-             '      <p><strong>Shop</strong><br>' + STREET + '<br>' + CITY + ', ' + REGION + ' '
-             + POSTAL + '</p>\n'
              '      ' + hours_html + '\n'
-             '      <p style="font-size:.88rem;color:var(--ink-2)">This is a working address, not a '
-             'showroom. Call before coming by.</p>\n'
+             '      <p style="font-size:.88rem;color:var(--ink-2)">Bridgeview is where the shop '
+             'is, not the limit of where we work. It is a working address rather than a '
+             'showroom, so call before you come by.</p>\n'
              '    </div>\n    ' + img("swatches") + '\n  </div>\n</section>\n')
 
     html += ('<section class="alt">\n  <div class="wrap narrow">\n'
-             '    <p class="eyebrow">Paperwork</p>\n    <h2>What we can show you</h2>\n'
+             '    <p class="eyebrow">Paperwork</p>\n'
+             '    <h2>What we can and cannot show you</h2>\n'
              '    ' + trust_row() + '\n'
-             '    <p style="margin-top:18px;font-size:.93rem;color:var(--ink-2)">These stay marked '
-             'as to supply until the real documents are handed over. Ask on the phone and you will '
-             'get a straight answer either way.</p>\n  </div>\n</section>\n')
+             '    <p style="margin-top:18px;font-size:.93rem;color:var(--ink-2)">These stay '
+             'marked as to supply until the real documents are handed over. Ask on the phone and '
+             'you will get a straight answer either way.</p>\n  </div>\n</section>\n')
 
     html += ('<section>\n  <div class="wrap narrow">\n'
-             '    <p class="eyebrow">Questions</p>\n    <h2>Before you call</h2>\n'
+             '    <p class="eyebrow">Questions</p>\n'
+             '    <h2>Before you pick up the phone</h2>\n'
              '    ' + faqrows + '  </div>\n</section>\n')
     html += cta()
     html += "</main>\n" + footer()
 
     contact_ld = {"@type": "ContactPage", "@id": canonical_url(fn) + "#webpage",
                   "url": canonical_url(fn), "name": "Contact " + BRAND,
-                  "description": "How to reach " + BRAND + " in Bridgeview, Illinois.",
+                  "description": ("How to reach " + BRAND + ", painting and remodeling across "
+                                  + REGION_LONG + ", based at " + STREET + " in Bridgeview, "
+                                  "Illinois."),
                   "isPartOf": {"@id": SITE + "/#website"}, "inLanguage": "en-US",
                   "about": {"@id": SITE + "/#business"}}
     html += ld_json([contact_ld, faqld, crumb_ld])
@@ -2517,7 +2915,7 @@ BLOG_SKIP = ("index.md", "README.md")
 # A post can override this with `seo_title` in its own front matter. A post with
 # neither fails the build rather than shipping a truncated title.
 BLOG_SEO_TITLE = {
-    "interior-painting-cost-southwest-chicago-suburbs": "Interior Painting Cost, Bridgeview IL",
+    "interior-painting-cost-southwest-chicago-suburbs": "Interior Painting Cost, SW Suburbs",
     "how-to-tell-good-prep-from-a-fast-cheap-job":      "How to Spot Good Paint Prep Work",
     "best-time-to-paint-house-exterior-chicago":        "Best Time to Paint a Chicago Exterior",
     "cabinet-refinishing-vs-replacing":                 "Cabinet Refinishing vs Replacing Cost",
@@ -3645,50 +4043,51 @@ def built_places():
     return sorted(keep, key=lambda x: (x["mi"], x["name"]))
 
 
-# ---- THE HOME TOWN, AND WHY ITS CITY PAGE IS NOT A CITY PAGE ----------------
-# launch/08-SEO-AND-KEYWORD-RESEARCH.md rule 13.2.1: the home page IS the
-# Bridgeview page. It carries "House Painters in Bridgeview, IL", the address,
-# the LocalBusiness schema and whatever authority the domain earns first.
+# ---- THE HOME TOWN ----------------------------------------------------------
+# launch/08-SEO-AND-KEYWORD-RESEARCH.md rule 13.2.1, rewritten 2026-08-31.
 #
-# areas/bridgeview.html still exists, and deleting it was the wrong fix. It
-# holds two things nothing else on this site holds (nobody in the Bridgeview map
-# pack is actually based in Bridgeview, and 16.1 percent of the housing here is
-# manufactured, the highest share of any place on the list), and removing it
-# would move the place count, the distance bands and the nearest-neighbor links
-# on all 75 other pages.
+# The OLD rule said the home page IS the Bridgeview page: it carried "House
+# Painters in Bridgeview, IL", so areas/bridgeview.html had to be pushed off the
+# head term onto a housing-data long tail to avoid two pages competing for it.
 #
-# So it is RE-POINTED rather than deleted. The home page keeps the transactional
-# head term. The city page targets the commercial-investigation long tail
-# instead: what the housing in Bridgeview actually is and what that changes
-# about a quote. Its title, h1, meta description and every internal anchor
-# pointing at it say that, and the first thing inside its body is a link handing
-# the "I want a painter in Bridgeview" visitor to the home page.
+# That was solving the wrong problem. Bridgeview is a village of 16,721 people
+# and it was the scope of the entire site while 76 city pages underneath it
+# covered all of Chicagoland. The home page and the service pages now carry the
+# REGIONAL head terms, which is where the volume is, so nothing on this site is
+# chasing "house painters Bridgeview" any more except the Bridgeview city page.
+#
+# The conflict is therefore gone and the special case with it. areas/bridgeview
+# .html is a normal city page: normal title pattern, normal h1, normal anchor
+# text, exactly like the other 75. The slug is still named here because two
+# things genuinely differ for the town the shop sits in: the distance is 0.0
+# miles, which makes the generic "X miles from the Bridgeview shop" fragment
+# nonsense in a meta description, and the page can say something no other page
+# on the site can say, which is that this is where the shop actually is.
 HOME_TOWN_SLUG = "bridgeview"
-
-# Length-checked at build time by seo_audit(): TITLE_MAX 60, DESC_MIN/MAX
-# 140 to 160. The description is assembled from the row rather than typed so it
-# cannot drift from the table above.
-HOME_TOWN_TITLE = "Bridgeview Housing Data and Paint Prep | Colors Your Way"
-HOME_TOWN_H1 = "Bridgeview housing, and what it changes about the work."
-HOME_TOWN_ANCHOR = "Bridgeview housing data"
 
 
 def home_town_desc(p):
-    return ("What Bridgeview, IL housing is: median build year " + str(p["medyr"]) + ", " +
-            _pc(p["pre1980"]) + "% built before 1980, " + _pc(p["mobile"]) +
-            "% manufactured. The painting page for Bridgeview is the home page.")
+    """Meta description for the town the shop is in.
+
+    Same shape as every other city page, minus the distance fragment, which
+    would read "0.0 miles from the Bridgeview shop" on the Bridgeview page.
+    Length-checked at build time by seo_audit(): DESC_MIN/MAX 140 to 160, and
+    assembled from the row rather than typed so it cannot drift from the table.
+    """
+    return ("Interior and exterior painting in Bridgeview, IL, where our shop is. Median build "
+            "year " + str(p["medyr"]) + ", " + _pc(p["pre1980"]) + "% built before 1980, " +
+            _n(p["own"]) + " owner households. Call " + PHONE_DISPLAY + ".")
 
 
 def city_anchor(q):
     """Anchor text for an internal link to a city page.
 
-    Everywhere except one place this is just the place name. Bridgeview is the
-    exception: the home page is competing for "house painters Bridgeview", so
-    every link on this site that points at areas/bridgeview.html names it for
-    what it is, a housing reference, instead of repeating the head term back at
-    a page that is deliberately not chasing it. See HOME_TOWN_SLUG above.
+    The place name, on every page including Bridgeview. This used to rename the
+    Bridgeview link to "Bridgeview housing data" so it would stop competing with
+    the home page for the head term. The home page is regional now, so the town
+    link says the town name like all 75 others.
     """
-    return HOME_TOWN_ANCHOR if q["slug"] == HOME_TOWN_SLUG else q["name"]
+    return q["name"]
 
 
 # ---- REGION GROUPS ----------------------------------------------------------
@@ -3697,24 +4096,26 @@ def city_anchor(q):
 # against their own address, and it is the same fact the travel section on each
 # page is built from.
 REGIONS = [
-    ("close-ring", "Bridgeview and the close ring, inside five miles",
-     "The shop is in Bridgeview and these are its immediate neighbors. Mostly 1950s to "
-     "1970s stock, heavily pre-1978, and close enough that one small repair is worth a "
-     "trip on its own."),
+    ("close-ring", "Right around the shop, within five miles",
+     "Our own neighborhood, ten or fifteen minutes away. Mostly houses from the 1950s "
+     "through the 1970s, which means real wood trim and paint that has been on there a "
+     "long time. Close enough that one room or one small repair is worth a trip on its "
+     "own."),
     ("chicago", "Chicago, the south and southwest sides",
-     "The city work is the south and southwest sides, and the pages below are Chicago "
-     "community areas rather than ZIP codes, because ZIP codes cut straight through "
-     "neighborhood lines. This is the oldest housing anywhere in the service area."),
-    ("five-to-ten", "The south and southwest suburbs, five to ten miles",
-     "The middle ring. Postwar bungalow and 1960s ranch stock at the near end, late "
-     "1980s subdivisions at the far end, and the difference between the two changes the "
-     "job completely."),
-    ("ten-to-sixteen", "Further south and southwest, ten to sixteen miles",
-     "Worth the drive for whole interiors and full exteriors. Worth asking about for "
-     "anything smaller."),
+     "Our city work is the south and southwest sides. Bungalows, plaster walls, deep "
+     "window casings and front porches. This is the oldest housing we paint and the most "
+     "detailed. The pages below are neighborhoods rather than ZIP codes, because a ZIP "
+     "code cuts straight through three neighborhoods that have nothing in common."),
+    ("five-to-ten", "The near south and southwest suburbs, five to ten miles",
+     "Twenty minutes or so. The near end of this ring is postwar bungalows and 1960s "
+     "ranches, and the far end is late 1980s subdivisions. Very different houses, so the "
+     "quotes come out looking very different too."),
+    ("ten-to-sixteen", "Further out, ten to sixteen miles",
+     "A real drive, and worth it for a whole interior or a full exterior. For one room or "
+     "a patch, call and ask first rather than counting on it."),
     ("outer", "The outer edge, sixteen miles and beyond",
-     "These are on the list because the work is real, not because the drive is short. "
-     "Ask about scheduling before you count on a date."),
+     "These towns are on the list because we do work out here, not because it is a short "
+     "drive. Ask about scheduling before you plan anything around a date."),
 ]
 
 
@@ -4459,11 +4860,26 @@ def trade_para(p, seed):
 # not been supplied. TRUST["epa_rrp"] is None and the trust row renders it as a
 # pending slot on every page, including these.
 #
+# PLAIN LANGUAGE FIRST, CITATION SECOND. Every branch now opens on a sentence a
+# homeowner can act on: old paint may contain lead, that changes how the room is
+# set up and cleaned rather than whether it can be painted. The rule's proper
+# name, its thresholds and the fact that EPA administers it directly in Illinois
+# all survive, one paragraph down, where somebody who wants the citation will
+# find it and somebody who wants the answer has already had it.
+#
+# What is NOT written here, and must not be added without the owner's sign-off:
+# "and we follow them". Mike has not confirmed his process, and CONFIRM already
+# carries that as an open item. Claiming a compliance practice on 64 pages on
+# the strength of nobody having asked him is exactly the class of invented claim
+# the rest of this build refuses to make. The honest version is to say what the
+# rule requires and to tell the reader to ask, which is what these paragraphs
+# do.
+#
 # Illinois is NOT an EPA-authorized state for the RRP rule, so EPA administers
 # it directly here. Do not name IDPH as the administering agency.
 
 def rrp_section(p, seed):
-    F = dict(name=p["name"], an=_an(p["name"]),
+    F = dict(name=p["name"], an=_an(p["name"]), dec=_decade(p),
              pre1980=_pc(p["pre1980"]) if p["pre1980"] is not None else "",
              pre1970=_pc(p["pre1970"]), medyr=p["medyr"], own=_n(p["own"]),
              rooms=_pc(p["rooms"]), hu=_n(p["hu"]))
@@ -4507,30 +4923,45 @@ def rrp_section(p, seed):
         ], seed, "rrp-share").format(**F)
 
     if p["rrp"] in ("HIGH", "MAJORITY"):
-        h2 = pick(["Pre-1978 paint is the normal case in " + p["name"],
-                   "Lead-safe work on " + p["name"] + " houses",
-                   "What the age of the housing here means for an interior job",
-                   p["name"] + " is mostly pre-1978 stock, and that changes the setup"],
+        h2 = pick(["Is there lead paint in my house?",
+                   "Old paint in " + p["name"] + ", and how it has to be handled",
+                   "What the age of " + p["name"] + " houses means for lead paint",
+                   "Lead paint: the short version for " + p["name"]],
                   seed, 5)
         body = [
-            share + ". " + pick([
-                "The federal Renovation, Repair and Painting rule applies to work that "
-                "disturbs paint in housing built before 1978, and in Illinois the EPA "
-                "administers it directly rather than through a state program.",
-                "Housing that old falls under the federal Renovation, Repair and Painting "
-                "rule, which covers any work disturbing paint in a home built before 1978. "
-                "Illinois is not an authorized state for it, so EPA runs it here directly.",
-                "That puts most of the housing inside the federal lead-safe renovation rule, "
-                "which attaches to pre-1978 homes and to work that disturbs the paint on "
-                "them. In Illinois it is administered by EPA rather than by a state agency.",
-                "Anything built before 1978 sits inside the federal Renovation, Repair and "
-                "Painting rule the moment work disturbs its paint. Illinois never took the "
-                "program on, so the agency behind it here is EPA itself.",
-                "Stock of that age brings the federal lead-safe renovation rule with it. The "
-                "rule turns on two things, a build year before 1978 and work that disturbs "
-                "the paint, and in Illinois EPA enforces it directly instead of a state "
-                "program doing it.",
-            ], seed, "rrp-rule"),
+            # The plain answer, first. No percentage, no statute, no agency. Six
+            # readings and every one of them names the town twice, because this
+            # is the largest branch on the site and a fixed paragraph here would
+            # be sixty-four identical copies.
+            pick([
+                "Most of {name} went up in the {dec}, which is well before 1978, and paint "
+                "made before then can contain lead. That does not stop a house being "
+                "painted. It changes how the room gets sealed off, how the dust is kept out "
+                "of the rest of the house, and what the place looks like when the day ends.",
+                "Paint from before 1978 can contain lead, and {dec} housing is the normal "
+                "case in {name}. The practical effect is not that the work cannot be done. "
+                "It is that it has to be contained and cleaned up to a standard, which is "
+                "time at the start of a {name} job and time at the end of it.",
+                "If your house in {name} is the usual {dec} vintage, there is very likely "
+                "old paint under whatever is on the walls now, and old paint can be leaded. "
+                "Nobody has to leave {an} {name} house unpainted over it. It does mean the "
+                "sanding, the sealing off and the cleanup are part of the job rather than an "
+                "extra.",
+                "The honest answer for a {dec}-era house in {name} is probably yes, there is "
+                "older paint under there, and paint that old can contain lead. What follows "
+                "from that is method, not a refusal: sheeting, sealed doorways, dust kept "
+                "where it is made, and a cleanup {name} homeowners should expect to see done "
+                "properly.",
+                "Old paint is the thing to know about here. {name} is largely {dec} housing, "
+                "and anything painted before 1978 may have lead in the layers underneath. It "
+                "is handled rather than avoided: the room is closed off, the dust is "
+                "contained while the work happens, and the site is cleaned to a set standard "
+                "before anyone leaves.",
+                "Assume there is old paint under the current coat. On {dec} housing, which "
+                "is most of {name}, that is the safe assumption, and paint from before 1978 "
+                "can be leaded. It affects the setup of {an} {name} job at both ends, the "
+                "sealing off before and the cleanup after, and not much in between.",
+            ], seed, "rrp-plain").format(**F),
             pick([
                 "In practice the rule is about containment and cleanup rather than about "
                 "paint. In {an} {name} room it sets a threshold of roughly six square feet of "
@@ -4563,6 +4994,32 @@ def rrp_section(p, seed):
             ("None of it is graded at the town line. The rule attaches to a build year and "
              "to the work being done, so the number worth checking is the one on your own "
              "deed in {name}").format(**F) + ".",
+            # THE CITATION, DEMOTED. This used to be the first paragraph of the
+            # section, which meant a homeowner met the words "federal
+            # Renovation, Repair and Painting rule" and "not an authorized
+            # state" before they were told what any of it meant for their
+            # house. Nothing is cut: the rule's proper name, the trigger, the
+            # published Census bucket and the fact that EPA administers it
+            # directly in Illinois are all still here, in full, for anyone who
+            # wants to check the plain-English version above against the source.
+            share + ". " + pick([
+                "The federal Renovation, Repair and Painting rule applies to work that "
+                "disturbs paint in housing built before 1978, and in Illinois the EPA "
+                "administers it directly rather than through a state program.",
+                "Housing that old falls under the federal Renovation, Repair and Painting "
+                "rule, which covers any work disturbing paint in a home built before 1978. "
+                "Illinois is not an authorized state for it, so EPA runs it here directly.",
+                "That puts most of the housing inside the federal lead-safe renovation rule, "
+                "which attaches to pre-1978 homes and to work that disturbs the paint on "
+                "them. In Illinois it is administered by EPA rather than by a state agency.",
+                "Anything built before 1978 sits inside the federal Renovation, Repair and "
+                "Painting rule the moment work disturbs its paint. Illinois never took the "
+                "program on, so the agency behind it here is EPA itself.",
+                "Stock of that age brings the federal lead-safe renovation rule with it. The "
+                "rule turns on two things, a build year before 1978 and work that disturbs "
+                "the paint, and in Illinois EPA enforces it directly instead of a state "
+                "program doing it.",
+            ], seed, "rrp-rule"),
             pick([
                 "In {name} it is worth asking about before the work starts rather than "
                 "after the sanding has. Ask whoever you hire to say, in plain terms, how "
@@ -4580,9 +5037,9 @@ def rrp_section(p, seed):
             ], seed, "rrp-close").format(**F),
         ]
     elif p["rrp"] == "LOW":
-        h2 = pick(["Newer stock, and the problems that come with it",
-                   p["name"] + " is on the young side, which changes the list",
-                   "What newer construction in " + p["name"] + " actually needs"],
+        h2 = pick(["Do I need to worry about lead paint here?",
+                   p["name"] + " is newer, so the list of problems is different",
+                   "What a newer " + p["name"] + " house actually needs"],
                   seed, 5)
         # Same three-slot treatment as the MIXED branch below, and for the same
         # reason. This branch also shipped as fixed prose, and once MIXED was
@@ -4597,21 +5054,24 @@ def rrp_section(p, seed):
         # finish, and a median is a midpoint so the reader should still confirm
         # the year on their own house.
         body = [
-            share + ". " + pick([
-                "That is low for this service area, and it means the pre-1978 lead-safe "
-                "question mostly does not arise here. Worth saying plainly rather than "
-                "leaving as an implication.",
-                "By the standards of this service area that is young housing, so the "
-                "pre-1978 lead-safe question largely does not come up in {name}. It is "
-                "stated rather than implied, because saying nothing about it reads like a "
-                "dodge.",
-                "Low, on this list. Most of {name} went up after the 1978 line, which takes "
-                "the lead-safe question off the table for most addresses in town instead of "
-                "leaving it hanging over the quote.",
-                "That puts {name} near the young end of everywhere covered here. For most "
-                "houses in town the pre-1978 lead-safe question simply does not arise, and "
-                "it is more use to a reader to say so outright than to leave them guessing.",
-            ], seed, "rrp-low-lead").format(**F),
+            # Plain answer first, same as the other two branches. On a young
+            # town the answer is genuinely reassuring, and burying it under a
+            # Census bucket sentence wasted the one piece of good news the
+            # section had to give.
+            pick([
+                "Probably not, for most addresses. {name} is mostly {dec} housing, which is "
+                "after the 1978 line, so the old lead paint question that hangs over most of "
+                "this service area largely does not apply to {an} {name} house.",
+                "For most of {name} the answer is no. The housing here mainly went up in the "
+                "{dec}, after the 1978 cutoff, so the lead paint problem that shapes a job in "
+                "the older towns is not usually the problem in {name}.",
+                "Mostly not. {dec} housing is the normal case in {name}, and that is on the "
+                "newer side of 1978, so lead in the old paint layers is not the thing that "
+                "decides how {an} {name} job gets set up.",
+                "Usually not here. {name} is young by the standards of everywhere else on "
+                "this site, mostly {dec} construction, and past 1978 the lead paint question "
+                "stops being the first thing anyone has to plan around.",
+            ], seed, "rrp-low-plain").format(**F),
             pick([
                 "What replaces it is scale and height. Larger elevations, taller interior "
                 "volumes and a builder finish that was applied once and has been left alone "
@@ -4631,6 +5091,24 @@ def rrp_section(p, seed):
                 "of it. Surface preparation and getting safely to the work are what a quote "
                 "on {name} housing turns on.",
             ], seed, "rrp-low-what").format(**F),
+            # The published figure, after the plain answer rather than in front
+            # of it. Same demotion as the other two branches: keep the number,
+            # keep the source, stop leading with them.
+            share + ". " + pick([
+                "That is low for this service area, and it means the pre-1978 lead-safe "
+                "question mostly does not arise here. Worth saying plainly rather than "
+                "leaving as an implication.",
+                "By the standards of this service area that is young housing, so the "
+                "pre-1978 lead-safe question largely does not come up in {name}. It is "
+                "stated rather than implied, because saying nothing about it reads like a "
+                "dodge.",
+                "Low, on this list. Most of {name} went up after the 1978 line, which takes "
+                "the lead-safe question off the table for most addresses in town instead of "
+                "leaving it hanging over the quote.",
+                "That puts {name} near the young end of everywhere covered here. For most "
+                "houses in town the pre-1978 lead-safe question simply does not arise, and "
+                "it is more use to a reader to say so outright than to leave them guessing.",
+            ], seed, "rrp-low-lead").format(**F),
             pick([
                 "It also means the year on your own house is worth confirming. A median is a "
                 "middle, and an older street inside a newer town is common.",
@@ -4644,9 +5122,9 @@ def rrp_section(p, seed):
             ], seed, "rrp-low-close").format(**F),
         ]
     else:
-        h2 = pick([p["name"] + " sits on both sides of the 1978 line",
-                   "The 1978 question in " + p["name"] + " depends on your street",
-                   "Mixed stock, so the answer here is check rather than assume"],
+        h2 = pick(["Is there lead paint in my house? In " + p["name"] + " it depends",
+                   "The lead paint answer in " + p["name"] + " depends on your street",
+                   "Old paint in " + p["name"] + ": check, do not assume"],
                   seed, 5)
         # THE MIXED BRANCH IS DRAWN IN THREE INDEPENDENT PIECES.
         #
@@ -4665,6 +5143,27 @@ def rrp_section(p, seed):
         # answer is the build year of the individual address. These are
         # rewrites, not synonym swaps.
         body = [
+            # Plain answer first, as in the other two branches. A homeowner in a
+            # straddling town needs to be told, before anything else, that the
+            # answer is knowable and where to look it up.
+            pick([
+                "It depends on your own address, and that is a real answer rather than a "
+                "dodge. Paint made before 1978 can contain lead, and {name} was built on "
+                "both sides of that year: some streets are older, some are newer. Look up "
+                "the year your house went up and you will know which one you are on.",
+                "Half of {name} is old enough for lead paint to be a live question and half "
+                "of it is not. Anything painted before 1978 can have lead in the layers "
+                "underneath, so the thing that settles it for {an} {name} house is the build "
+                "year on your own property record, not a figure for the town.",
+                "Your street decides this one. Old paint can contain lead, the cutoff is "
+                "1978, and {name} straddles it. Check the year on your own house before "
+                "anybody prices the work, because it changes how the room gets sealed off "
+                "and how it gets cleaned at the end.",
+                "The answer for {name} as a whole is both, which is why it is worth checking "
+                "for your own house. Paint from before 1978 can be leaded. On one side of "
+                "that year {an} {name} job needs containment and a specific cleanup, and on "
+                "the other side it does not.",
+            ], seed, "rrp-mixed-plain").format(**F),
             share + ". " + pick([
                 "That is close enough to the middle that the town as a whole does not "
                 "answer the question. Your own house does.",
@@ -4758,6 +5257,30 @@ def travel_section(p, seed):
              "The whole city is not on offer and there is no point pretending otherwise. "
              "Chicago is too big and too well covered for one small shop to claim all of it, "
              "so anything well north of here gets an early no rather than a late one."),
+        ]
+    elif p["mi"] < 0.05:
+        # The home town is zero miles from itself, and the close-ring band below
+        # rendered that literally: "Bridgeview is 0.0 straight-line miles from
+        # the shop". True, and it reads like a machine wrote it, which on the
+        # one page where proximity is the whole argument is the worst place on
+        # the site to sound generated.
+        band = [
+            ("The shop is at " + STREET + ", in " + n + ". There is no drive: this is the "
+             "one place on this site where the work and the workshop share a village.",
+             "That is not a marketing line, it is a scheduling fact. A single ceiling, one "
+             "bad wall or a door that needs stripping is worth a trip here on its own, and "
+             "in most towns it is not."),
+            ("There is no distance to quote for " + n + ". The shop is on " + STREET +
+             ", inside the village, and every other page on this site measures itself "
+             "against this address.",
+             "The practical effect is at the small end of the work. Little jobs fit into "
+             "gaps in the week rather than waiting for a day long enough to justify the "
+             "driving, so you get a date sooner than the size of the job suggests."),
+            (n + " is where the shop is. " + STREET + ", not a franchise office in another "
+             "county and not a service-area pin dropped on a map.",
+             "Which mostly matters for the jobs that are too small to travel for. A repair "
+             "that is worth doing gets looked at here instead of being folded into "
+             "something bigger next month."),
         ]
     elif p["mi"] < 5:
         band = [
@@ -4925,11 +5448,19 @@ def estimate_notes(p, seed):
         "Two different customers.",
         " " + _pc(p["own_pct"]) + " percent owner occupancy means homeowner work and landlord "
         "work sit side by side here, and they want opposite things from a schedule.")
-    add(True,
+    add(p["mi"] >= 0.05,
         "Distance, stated.",
         " " + n + " is " + ("%.1f" % p["mi"]) + " straight-line miles from the shop. Travel "
         "to " + n + " is not a hidden line item on this site and it should not be one on a "
         "written quote either.")
+    # The home town would otherwise read "Bridgeview is 0.0 straight-line miles
+    # from the shop", which is true and reads like a template that was never
+    # looked at. Same fact, said the way a person says it. Guarded on distance
+    # rather than on the slug so it stays right if the shop ever moves.
+    add(p["mi"] < 0.05,
+        "No travel line at all.",
+        " The shop is in " + n + ". Nothing on a quote here is covering a drive, which is "
+        "worth checking against any other number you are given for the same work.")
 
     start = hnum(p["slug"], "estimate") % max(1, len(pool))
     ordered = pool[start:] + pool[:start]
@@ -5268,13 +5799,387 @@ def city_faq(p, seed):
     return out
 
 
+# ---- the homeowner opening --------------------------------------------------
+# Everything above this comment measures a town. This block is the only part of
+# a city page written for the person who lives in one.
+#
+# WHY IT EXISTS. The page used to open on the Census and put the answer
+# underneath it: one lede literally read "Numbers first, sales second". That was
+# a deliberate anti-doorway decision and it worked, but it optimized for an
+# analyst. Somebody who has just searched "painters near me" wants four things,
+# in this order: can you do my job, roughly what will it cost, are you any good,
+# and when can you come. A median build year answers none of them. So the answer
+# comes first now and the figures moved down the page to support it. Nothing was
+# deleted. Every number and every citation is still on the page, lower, in a
+# block that says what it is.
+#
+# TWO RULES FOR ANYTHING ADDED HERE, both load-bearing:
+#
+#   1. No percentages and no citations above the fold. Plain consequence only.
+#      "Most houses around here went up in the 1950s, so the trim is original and
+#      has had a few coats" is the same fact as "median year built 1954, 71.2
+#      percent pre-1980" and one of them is readable on a phone. The figure and
+#      the source still exist, in the data block at the foot of the page.
+#
+#   2. Every variant names the town at least twice and the two halves are drawn
+#      on INDEPENDENT slots. This block is 76 pages wide, so a fixed paragraph
+#      in it is 76 identical copies and doorway_audit() counts every one of them.
+#      The decade word varies with the town's own median year, which is a second
+#      differentiator inside a single era bucket.
+
+
+def _decade(p):
+    """The median build year as a decade word. 1954 becomes "1950s"."""
+    return str(p["medyr"])[:3] + "0s"
+
+
+# Card names are headings and read fine as headings. Two of them carry an "and"
+# inside, and dropping those into a running sentence produced "drywall and
+# repair and interior painting", which is the tell of a string that was written
+# for a nav bar and reused in prose. These are the prose forms, and they are the
+# only ones any sentence on a city page is allowed to use.
+SERVICE_PROSE = {
+    "interior-painting": "interior painting",
+    "exterior-painting": "exterior painting",
+    "cabinet-refinishing": "cabinet refinishing",
+    "drywall-and-repair": "drywall repair",
+    "remodeling": "remodeling",
+}
+
+
+def service_prose(s):
+    return SERVICE_PROSE.get(s["slug"], s["card"].lower())
+
+
+def plain_age_line(p, seed):
+    """How old the housing is, said the way a neighbor would say it.
+
+    Two halves, drawn independently: what the houses are, then what that changes
+    about the work. Sixteen combinations per era bucket, times the decade word,
+    which is what keeps twenty-one towns of the same era from opening the same
+    way. No number appears in either half on purpose. The numbers are downstairs.
+    """
+    F = dict(name=p["name"], an=_an(p["name"]), dec=_decade(p))
+    era = p["era"]
+    if era in ("prewar", "postwar-50s"):
+        first = [
+            "Most houses around {name} went up in the {dec}. Housing that age normally "
+            "still has its original trim, and that trim is already carrying a lot of paint.",
+            "The bulk of {name} is {dec} housing. That usually means plaster on at least "
+            "some walls and ceilings, deep original woodwork, and several coats of paint "
+            "already sitting on it.",
+            "{name} is mostly {dec} housing and it behaves like it: original casing and "
+            "baseboard, plaster in the older rooms, and windows that have been painted over "
+            "more than once.",
+            "If your house is typical for {name} it dates from the {dec}. Old trim, plaster "
+            "walls in at least part of it, and a surface somebody has already painted, well "
+            "or badly.",
+        ]
+        second = [
+            "That changes the prep far more than it changes the paint. Getting {an} {name} "
+            "house right is mostly about what comes off and what gets made good before "
+            "anything goes on.",
+            "It is the reason two painters can look at the same {name} house and hand you "
+            "very different numbers. One of them has priced the preparation and one of them "
+            "has not.",
+            "So on {an} {name} house the preparation is the job. Paint over a wall that was "
+            "not made ready looks right for a season and then tells on you.",
+            "Which means the hours go into stripping, filling, sanding and sealing rather "
+            "than into rolling. On {name} housing that is where a fair quote and a cheap one "
+            "part company.",
+        ]
+    elif era in ("60s-early-70s", "70s-early-80s"):
+        first = [
+            "Most of {name} is {dec} housing: ranches, raised ranches and split levels, "
+            "masonry at the bottom and painted wood up top.",
+            "{name} runs to {dec} construction. Brick or brick fronted, with the wood that "
+            "actually needs painting up on the gables, the soffit and the fascia.",
+            "The typical house in {name} was built in the {dec}. Not much of the outside "
+            "takes paint at all, and what does is mostly above head height.",
+            "{dec} housing is the normal case in {name}. Masonry walls, wood trim, and most "
+            "of that wood somewhere you need a ladder to reach.",
+        ]
+        second = [
+            "That is why an exterior here takes longer than the size of the house suggests. "
+            "The work on {an} {name} elevation is all detail and most of it is off a ladder.",
+            "So the outside number is set by access rather than by wall area, and the inside "
+            "one by how many doors and how much casing {an} {name} house turns out to have.",
+            "It also means the parts that fail first are the parts nobody looks at. On {an} "
+            "{name} exterior the brick is usually fine and the wood above it is not.",
+            "Which puts most of the cost in reach and in preparation. Painting {an} {name} "
+            "house is not a wall-area job, it is a trim and access job.",
+        ]
+    else:
+        first = [
+            "{name} is largely {dec} housing, newer than most of what we work on. Big "
+            "elevations, two story entries, and whatever finish the builder put on.",
+            "Most of {name} was built in the {dec}. The houses are large rather than old: "
+            "long walls outside, tall rooms and stair walls inside.",
+            "The typical {name} house dates from the {dec}. Siding with a masonry front, "
+            "cedar or composite trim, and an original builder finish that has never been "
+            "touched.",
+            # No lead-paint claim in here. The RRP section owns that question and
+            # grades it per town, and a MIXED town like Lockport would have this
+            # paragraph waving the question away two screens above a section
+            # telling the reader to go and check their own build year.
+            "{name} is newer stock, mostly {dec}. The problem on housing like that is not "
+            "what is under the paint, it is the size of what has to be covered.",
+        ]
+        second = [
+            "So the question on {an} {name} house is not what is underneath. It is how you "
+            "reach the work safely, and what the original coat is doing now that it has "
+            "stopped holding.",
+            "That makes staging and setup a real line on the quote rather than an "
+            "afterthought, and it is the part a fast number for {name} quietly leaves out.",
+            "Which means the job gets planned by elevation rather than by room. A builder "
+            "finish on {an} {name} house lets go across a whole wall at once instead of in "
+            "patches.",
+            "It means the first repaint is the one that has to be prepped honestly, because "
+            "the coat under it in {name} was sprayed once and never disturbed since.",
+        ]
+    return (pick(first, seed, "plain-age-a").format(**F) + " " +
+            pick(second, seed, "plain-age-b").format(**F))
+
+
+def plain_do_line(p, seed):
+    """What we do, in the order this town actually needs it, plus the distance.
+
+    The service list is real: it comes off service_order(), which is weighted by
+    the housing. A rental-heavy town leads on repair and turnover, a large newer
+    town leads on exteriors. The distance carries a decimal that exists on no
+    other page, which is what stops this paragraph running together with the
+    same paragraph on a town that drew the same phrasing.
+    """
+    ordered = service_order(p)
+    top = [service_prose(s) for s in ordered[:3]]
+    F = dict(name=p["name"], mi="%.1f" % p["mi"], street=STREET,
+             a=top[0], b=top[1], c=top[2])
+    # The home town is 0.0 miles from itself, and "our shop is 0.0 miles away"
+    # is the kind of sentence a generator writes and a person never does.
+    if p["mi"] < 0.05:
+        return pick([
+            "We do {a}, {b} and {c} in {name}, plus the repairs that have to happen before "
+            "any of it. The shop is here, at {street}, so this is the one town on the site "
+            "with no drive at all.",
+            "In {name} that mostly means {a} and {b}, with {c} on the same visit often "
+            "enough that splitting them wastes everyone's time. Our shop is on {street}, in "
+            "the village.",
+            # Not "service-area pin on a map": the home-town callout further
+            # down this same page already uses that phrase, and this is the one
+            # page where both blocks render.
+            "The work we get called out to in {name} is {a}, {b} and {c}. We are based here, "
+            "on {street}, so the village is not a place we drive out to.",
+            "{a}, {b}, {c} and the making-good that comes first: that is the list in {name}. "
+            "The shop is at {street}, in the village itself.",
+        ], seed, "plain-do").format(**F)
+    return pick([
+        "We do {a}, {b} and {c} in {name}, plus the repairs that have to happen before any "
+        "of it. Our shop is {mi} straight-line miles away, at {street} in Bridgeview.",
+        "In {name} that mostly means {a} and {b}, with {c} on the same visit often enough "
+        "that splitting them wastes everyone's time. We are {mi} straight-line miles away at "
+        "{street} in Bridgeview.",
+        "The work we get called out to in {name} is {a}, {b} and {c}. Our own shop is at "
+        "{street} in Bridgeview, {mi} straight-line miles from you, not a franchise desk in "
+        "another county.",
+        "{a}, {b}, {c} and the making-good that comes first: that is the list in {name}. The "
+        "shop is {mi} straight-line miles away at {street} in Bridgeview.",
+    ], seed, "plain-do").format(**F)
+
+
+def quick_answers(p, seed):
+    """The four questions a homeowner actually arrived with, answered in one
+    line each, in a list they can scan on a phone instead of a paragraph they
+    have to read.
+
+    THE ORDER IS FIXED AND IT IS NOT ROTATED. Every other selected block on a
+    city page rotates on the slug, because rotation is cheap differentiation.
+    This one must not. The order is the order somebody arrives in: can you do my
+    job, what will it cost, what needs doing first, when can you come. The first
+    build of this block did rotate it, and Brighton Park came out leading on
+    "what usually needs doing first" above "can we do your job", which is
+    answering the fourth question before the first. Differentiation is worth
+    paying for, but not out of the reader's first ten seconds.
+
+    The four bold labels are therefore identical on all 76 pages. That is about
+    twenty words of shared text and the similarity audit swallows it without
+    noticing. Every ANSWER carries something true of this town: the service
+    order, the distance to the decimal, or the era.
+    """
+    ordered = service_order(p)
+    n = p["name"]
+    mi = "%.1f" % p["mi"]
+    era = p["era"]
+    # Three readings on each branch rather than one, each naming the town. The
+    # single-reading version of this block cost two points of measured
+    # similarity on its own, because "Usually the repairs. Cracked plaster,
+    # failed caulk and loose paint..." was thirty identical words on all thirty
+    # prewar and postwar towns at once. Variants are the price of a block that
+    # appears on every page.
+    if era in ("prewar", "postwar-50s"):
+        driver = pick([
+            "the state of the woodwork and the ceilings, because on housing this age that "
+            "is where the hours go",
+            "how much has already been painted onto the trim, because taking that back is "
+            "most of the labor on " + _an(n) + " " + n + " interior",
+            "condition rather than size: what has to come off or be made good in " + n +
+            " before anything new goes on",
+        ], seed, "qa-driver")
+        firstjob = pick([
+            "Usually the repairs. Cracked plaster, failed caulk and loose paint have to be "
+            "sorted before anything gets a topcoat.",
+            "In " + n + " it is normally the making-good: plaster that has opened up, "
+            "windows painted shut, and trim that has lost its edge under old coats.",
+            "The prep, almost always. On housing this age in " + n + " the ceilings and the "
+            "woodwork decide the job, and both of them come before the first finish coat.",
+        ], seed, "qa-first")
+    elif era in ("60s-early-70s", "70s-early-80s"):
+        driver = pick([
+            "how much of the painted wood is up high, because reach costs more than wall "
+            "area does",
+            # These three say what the COST turns on. They deliberately do not
+            # restate the fact that the wood is high up: plain_age_line() has
+            # already said that one screen above, and a driver that repeats it
+            # reads like the page forgot it had.
+            "the ladder plan. Two " + n + " exteriors with the same square footage price "
+            "differently depending on how the ground sits under them and what has to be "
+            "reached from where",
+            "the condition of the trim rather than the size of the house, because in " + n +
+            " it is the wood that has been weathering and the masonry that has not",
+        ], seed, "qa-driver")
+        firstjob = pick([
+            "Usually the soffit, fascia and gable ends. They fail years before the brick "
+            "underneath them needs anything.",
+            "In " + n + " it is the high trim: soffit, fascia, the gable and whatever sits "
+            "over a split entry. That is what goes first and it is what nobody looks at.",
+            "The wood above the masonry. On " + n + " houses the walls outlast the trim by "
+            "a long way, so the trim is the job and the brick is not.",
+        ], seed, "qa-first")
+    else:
+        driver = pick([
+            "access and setup, because tall walls and two story entries are not room-rate "
+            "work",
+            # Deliberately NOT phrased as "staging is a real line on the quote".
+            # plain_age_line() has a variant that says exactly that, and the two
+            # blocks sit one screen apart, so Frankfort shipped the same
+            # sentence twice inside ten lines.
+            "height. Two story walls and open stair volumes take equipment and time to "
+            "reach, and in " + n + " that is a bigger share of the day than the painting",
+            "the state of the original builder finish, and how much staging it takes to "
+            "reach it on " + _an(n) + " " + n + " house",
+        ], seed, "qa-driver")
+        firstjob = pick([
+            "Usually the south and west elevations and the trim boards at the top of a two "
+            "story wall. Those go first.",
+            "In " + n + " it is the sun-facing walls and the high trim boards. A builder "
+            "finish lets go there before it lets go anywhere else.",
+            "The elevations that take the weather, then the entry and garage doors. On " +
+            n + " housing that order is predictable enough to plan around.",
+        ], seed, "qa-first")
+    if p["mi"] < 0.05:
+        # Does not restate where the shop is. `far` above has just said it, and
+        # the first version put "The shop is in Bridgeview itself" twice inside
+        # one bullet.
+        when = ("Faster than anywhere else on this site, and it shows most on small work: "
+                "a single wall or one bad ceiling is worth a look on its own here rather "
+                "than being bundled into something bigger next month.")
+    elif p["mi"] < 5:
+        when = pick([
+            "Quickly. " + n + " is inside the close ring, so a small job can fit into a gap "
+            "in the week instead of waiting for a day big enough to absorb the driving.",
+            "Soon. At this range " + n + " is close enough that one room, one ceiling or one "
+            "bad door is worth a trip on its own, which is not true further out.",
+            "Sooner than the size of the job would suggest. Nothing about the drive to " + n +
+            " has to be scheduled around, so small work gets seen rather than deferred.",
+        ], seed, "qa-when")
+    elif p["mi"] < 10:
+        when = pick([
+            "Soon enough that looking at the work and doing the work do not have to be the "
+            "same trip. Ask on the call and you will get a real date rather than a maybe.",
+            "Straightforwardly, for most jobs. " + n + " is in the middle ring, so a "
+            "walk-through costs nothing but a visit and the date comes off the call.",
+            "Without much fuss. From here " + n + " is a normal run rather than an "
+            "expedition, and the only thing worth flagging is whether the job is a single "
+            "small item.",
+        ], seed, "qa-when")
+    else:
+        when = pick([
+            "Depends on the job. " + n + " is a genuine drive, so a full interior or a whole "
+            "exterior is straightforward to schedule and one small patch on its own may not "
+            "be. You will be told which.",
+            "Ask before you plan around a date. " + n + " is out at the range where the size "
+            "of the work and the week have to make sense together, and a straight no in "
+            "advance beats a missed appointment.",
+            "It depends on what the work is. At this distance " + n + " suits whole "
+            "interiors, complete exteriors and remodeling. A single small repair usually "
+            "does not justify the trip, and we will say so rather than pad the number.",
+        ], seed, "qa-when")
+    # Distance rides inside "when can you come", because a homeowner asking how
+    # far away we are is really asking whether we will turn up. Splitting it
+    # into its own row spent a line of a four-line block restating a mile
+    # figure that is already in the paragraph above and in the chips below.
+    # The street address is deliberately NOT repeated here. plain_do_line() gives
+    # it one paragraph above and travel_section() gives it again further down,
+    # and printing it a third time inside a four-line answer block made two
+    # pages carry the same twelve-word run twice within a screen.
+    if p["mi"] < 0.05:
+        far = "The shop is in " + n + " itself, so there is no travel to price at all. "
+    else:
+        far = ("We are " + mi + " straight-line miles out, and travel is not a hidden line "
+               "on a quote from us. ")
+    rows = [
+        ("Can we do your job?",
+         " Almost certainly. In " + n + " it is " + service_prose(ordered[0]) + " and " +
+         service_prose(ordered[1]) + " most weeks, plus the drywall, plaster and carpentry "
+         "that goes underneath both."),
+        ("What will it cost?",
+         " There is no price list on this site, because there is no honest local one to "
+         "publish yet. Every job is quoted after we walk it. What moves the number on " +
+         _an(n) + " " + n + " house is " + driver + "."),
+        ("What usually needs doing first?", " " + firstjob),
+        ("When can you come?", " " + far + when),
+    ]
+    return "".join("<li><strong>" + h + "</strong>" + t + "</li>" for h, t in rows)
+
+
+def next_step(p, seed, up):
+    """The next step, high on the page instead of at the bottom of it.
+
+    The hero form is above this and the CTA band is below it, but neither is
+    inside the reading flow. Somebody who has just read two paragraphs and a
+    list of answers is at the exact point of deciding, and the thing to do next
+    should be in front of them there and not four screens down.
+    """
+    n = p["name"]
+    # Short on purpose. There are two buttons directly underneath it and a form
+    # at the top of the page, so this is a prompt, not a pitch.
+    line = pick([
+        "Call or text " + PHONE_DISPLAY + ", say where in " + n + " you are and what needs "
+        "doing. Photos to the same number help.",
+        "Quickest route to a real number: " + PHONE_DISPLAY + ". Tell us the rooms or the "
+        "elevation and roughly what you want.",
+        "Ring or text " + PHONE_DISPLAY + " and we will tell you what the job involves and "
+        "when somebody can be in " + n + " to look at it.",
+        "Say the room and roughly what you want on " + PHONE_DISPLAY + ". Every " + n +
+        " job is quoted after we have stood in it, never off a website.",
+    ], seed, "next-step")
+    return ('<div class="callout"><h3>' +
+            pick(["What to do next", "The next step", "How to get this looked at"],
+                 seed, "next-step-h3") + '</h3><p>' + line + '</p>'
+            '<div class="btnrow" style="margin-top:14px">'
+            '<a class="btn" href="tel:' + PHONE_E164 + '">Call or text ' + PHONE_DISPLAY +
+            '</a>'
+            '<a class="btn btn-b" href="' + up + 'contact.html#quote">Send the details</a>'
+            '</div></div>\n')
+
+
 # ---- title and meta description --------------------------------------------
 
-# Titles already spoken for by pages outside areas/. Bridgeview is the whole
-# problem: the home page is already "House Painters in Bridgeview, IL", and the
-# Bridgeview city page drew the same pattern. Two identical title tags on one
-# site is a duplicate-content signal and seo_audit() fails on it, correctly. The
-# set is filled in by main() rather than typed, so it cannot go stale.
+# Titles already spoken for by pages outside areas/. Two identical title tags
+# on one site is a duplicate-content signal and seo_audit() fails on it,
+# correctly. The set is filled in by main() rather than typed, so it cannot go
+# stale. Bridgeview used to be carved out of this pool because the home page
+# held "House Painters in Bridgeview, IL"; the home page is regional now, so
+# the town draws from the pool like every other place.
 TITLES_TAKEN = set()
 
 
@@ -5284,14 +6189,7 @@ def city_title(p, seed):
     Uniqueness across the city pages comes from the place name, which is unique
     by definition. This only has to solve length and collisions with the rest of
     the site.
-
-    Bridgeview does not draw from this pool at all. Every pattern in it is a
-    variation on the head term the HOME page is targeting, so the home town gets
-    a fixed title pointed at a different intent. See HOME_TOWN_SLUG.
     """
-    if p["slug"] == HOME_TOWN_SLUG:
-        TITLES_TAKEN.add(HOME_TOWN_TITLE)
-        return HOME_TOWN_TITLE
     n = p["name"]
     where = n + ", IL" if p["kind"] == "town" else n + ", Chicago"
     cands = [
@@ -5352,8 +6250,13 @@ def city_desc(p, seed):
     # walks the whole list and takes anything that still fits, so the tail exists
     # purely to close a gap of ten or twenty characters. Without short fragments
     # at the end a town like Justice lands at 137 and fails the window.
+    # Reordered so the fragments a homeowner reads in a search result come
+    # before the ones an analyst reads. Uniqueness is unaffected: it comes from
+    # the town name in `lead` and the median build year in `core`, both of which
+    # are always present.
     extras = [
         "%.1f" % p["mi"] + " miles from the Bridgeview shop.",
+        "Owner run, not a franchise. Call " + PHONE_DISPLAY + ".",
         _n(p["own"]) + " owner households.",
         "Median " + _pc(p["rooms"]) + " rooms.",
         "Census sourced, no invented figures.",
@@ -5371,8 +6274,6 @@ def city_desc(p, seed):
 
 
 def city_h1(p, seed):
-    if p["slug"] == HOME_TOWN_SLUG:
-        return HOME_TOWN_H1
     where = p["name"] + ", IL" if p["kind"] == "town" else p["name"] + ", Chicago"
     return pick([
         "Painting and remodeling in " + where + ".",
@@ -5443,36 +6344,72 @@ def build_city(p, posts=()):
     chips.append('<li><span class="k">In buildings of 2+</span><span class="v">' +
                  _pc(p["multi"]) + "%</span></li>")
     chips.append('<li><span class="k">Straight-line from the shop</span><span class="v">' +
-                 F["mi"] + " mi</span></li>")
+                 ("in town" if p["mi"] < 0.05 else F["mi"] + " mi") + "</span></li>")
 
-    # ---- section: the housing stock ---------------------------------------
-    outliers = outlier_sentences(p, seed)
-    stock_h2 = pick(["What the housing in " + p["name"] + " is actually like",
-                     "The housing stock in " + p["name"] + ", in numbers",
-                     p["name"] + " by its housing, not by its map pin",
-                     "Reading " + p["name"] + " off the Census tables"], seed, 9)
-    # The home town's page opens by handing the visitor to the home page. A
-    # reader who searched for a painter in Bridgeview wants the home page, and a
-    # reader who wants to know what Bridgeview housing is wants this one. Saying
-    # so in the first block is both the honest answer and the internal signal
-    # that tells Google which of the two URLs is the Bridgeview destination.
-    stock = ""
+    # ---- section: the homeowner opening -----------------------------------
+    # This block did not exist before. It is the answer, in plain English, and
+    # it is first. The measured material that used to occupy this position is
+    # unchanged and now sits under "the numbers behind this page" at the foot.
+    # Kept deliberately clear of the services H2 pool below, which owns "What we
+    # do in {name}". The first draft had both, and Brighton Park shipped with
+    # "What we do for houses in Brighton Park" and "What we do in Brighton Park"
+    # two screens apart, which reads like a page that lost its place.
+    open_h2 = pick(["Start here if you own a house in " + p["name"],
+                    "Your house in " + p["name"] + ", and what we would do with it",
+                    "The short version for " + p["name"] + " homeowners",
+                    "What we can do at your place in " + p["name"]], seed, "open-h2")
+    opener = ('<h2>' + open_h2 + '</h2>\n'
+              '<p>' + plain_age_line(p, seed) + "</p>\n"
+              '<p>' + plain_do_line(p, seed) + "</p>\n"
+              '<h3>' + pick(["The four questions people actually call about",
+                             "Answered before you have to ask",
+                             "The short answers"], seed, "quick-h3") + '</h3>\n'
+              '<ul class="notes">' + quick_answers(p, seed) + "</ul>\n" +
+              next_step(p, seed, up))
+
+    # The home town's page says the one thing no other page on this site can
+    # say: the shop is in this town. It used to sit inside the Census block at
+    # the top of the page, which is the wrong place for it now that the top of
+    # the page belongs to the homeowner. It is proximity, so it goes with the
+    # opening.
     if p["slug"] == HOME_TOWN_SLUG:
-        stock += ('<div class="callout"><h2>Looking for a painter in Bridgeview? '
-                  'Start on the home page.</h2>'
-                  '<p>The shop is in Bridgeview, at ' + STREET + ', which makes the '
-                  '<a href="' + up + 'index.html">home page the Bridgeview page</a>: the work, '
-                  'who does it, and how to get it looked at. That is where a Bridgeview job '
-                  'starts and this page is not trying to take it.</p>'
-                  '<p>What sits here instead is the other half of the question: Bridgeview '
-                  'read off its own published housing figures, and what those figures change '
-                  'about the work. Median build year ' + str(p["medyr"]) + ', ' +
-                  _pc(p["pre1980"]) + ' percent of it up before 1980, and ' +
-                  _pc(p["mobile"]) + ' percent of it manufactured housing, which is the '
-                  'highest share of any place on this site and a different job from a '
-                  'site-built house. This is the reference page for the village. The home '
-                  'page is the one to call from.</p></div>\n')
-    stock += ('<h2>' + stock_h2 + '</h2>\n'
+        opener += ('<div class="callout"><h3>This is the town the shop is in</h3>'
+                   '<p>' + STREET + ', Bridgeview. It is a working address, not a franchise '
+                   'office in another county and not a service-area pin dropped on a map, and '
+                   'it is the reason a small repair in the village is worth looking at the '
+                   'same week rather than being bundled into next month. Every other page on '
+                   'this site measures its distance from this one place.</p>'
+                   '<p>Being based here does not make the housing simple. More of Bridgeview '
+                   'is manufactured housing than any other place on this site, and that is a '
+                   'genuinely different job from a site-built house: different substrate, '
+                   'different primer, different price. Ask any contractor quoting you here '
+                   'which of the two they are pricing. The share, the median build year and '
+                   'the pre-1980 figure behind that are all further down this page.</p>'
+                   '</div>\n')
+
+    # ---- section: the numbers, moved down ---------------------------------
+    # NOTHING WAS REMOVED HERE. Every chip, every paragraph and every citation
+    # that used to open the page is still on it, in the same words, in this
+    # block. What changed is its position and the heading over it. It is the
+    # evidence for the plain-English claims above, and that is where evidence
+    # belongs on a page a homeowner is reading on a phone.
+    outliers = outlier_sentences(p, seed)
+    stock_h2 = pick(["Where these figures come from",
+                     "The housing in " + p["name"] + ", in numbers",
+                     "The data behind everything above",
+                     p["name"] + " housing, by the published figures"], seed, 9)
+    stock = ('<h2>' + stock_h2 + '</h2>\n'
+             # One short line, not a paragraph. The first draft explained at
+             # length why the data had moved down the page, which is a note to
+             # whoever edits this file dressed up as copy. The reader needs to
+             # know these are the receipts and nothing else.
+             '<p class="src">' + pick([
+                 "The working behind everything above, with the source named at the "
+                 "bottom.",
+                 "Every claim higher up this " + p["name"] + " page comes out of these "
+                 "figures.",
+                 "The published numbers behind all of that, and where they came from.",
+             ], seed, "stock-intro") + "</p>\n"
              '<ul class="chips">' + "".join(chips) + "</ul>\n"
              '<p>' + age_para(p, seed) + "</p>\n"
              '<p>' + tenure_para(p, seed) + "</p>\n")
@@ -5482,10 +6419,15 @@ def build_city(p, posts=()):
     stock += ('<p class="src">Source: ' + cite + ' ' + CENSUS_MARK + '</p>\n')
 
     # ---- section: what that means for the work ----------------------------
-    means_h2 = pick(["What that means for a paint job in " + p["name"],
-                     "How the age of the stock changes the work here",
-                     "Why two houses in " + p["name"] + " do not price the same",
-                     "The part of " + _an(p["name"]) + " " + p["name"] + " quote that actually varies"], seed, 10)
+    # H2s are written as questions a homeowner would type or ask out loud. The
+    # old set was descriptive and analytical ("How the age of the stock changes
+    # the work here"), which is a heading for somebody studying the town rather
+    # than somebody who owns a house in it.
+    means_h2 = pick(["What decides the price of a job in " + p["name"],
+                     "Why two quotes for the same " + p["name"] + " house come out different",
+                     "What we look at before we price the work",
+                     "The parts of " + _an(p["name"]) + " " + p["name"] +
+                     " quote that actually move"], seed, 10)
     notes = "".join("<li><strong>" + h + "</strong>" + t + "</li>"
                     for h, t in estimate_notes(p, seed))
     means = ('<h2>' + means_h2 + '</h2>\n'
@@ -5551,8 +6493,8 @@ def build_city(p, posts=()):
     cp = contrast_para(p, seed)
     contrast = ""
     if cp:
-        c_h2 = pick(["Next door is not the same job",
-                     p["name"] + " against its nearest neighbor",
+        c_h2 = pick(["The next town over is not the same job",
+                     "Why we do not quote " + p["name"] + " off a regional average",
                      "Why the town line matters here",
                      "The place closest to " + p["name"] + ", and how it differs"], seed, 11)
         contrast = '<h2>' + c_h2 + '</h2>\n<p>' + cp + "</p>\n"
@@ -5566,10 +6508,10 @@ def build_city(p, posts=()):
         why = service_reason(p, s)
         svc_rows += ('<li><h3><a href="' + up + s["slug"] + '.html">' + s["card"] +
                      ' in ' + p["name"] + "</a></h3><p>" + why + "</p></li>")
-    svc_h2 = pick(["What we get called out to in " + p["name"],
-                   "The work, in the order it comes up here",
-                   "Services in " + p["name"],
-                   "What this housing actually needs"], seed, 12)
+    svc_h2 = pick(["What we do in " + p["name"],
+                   "The jobs we get called out to here, most first",
+                   "Work we take on in " + p["name"],
+                   "What houses in " + p["name"] + " usually need"], seed, 12)
     services = ('<h2>' + svc_h2 + '</h2>\n<ul class="reads">' + svc_rows + "</ul>\n")
 
     # ---- section: travel ---------------------------------------------------
@@ -5586,29 +6528,43 @@ def build_city(p, posts=()):
         t_mid = ("For scale, the nearest other place on this site is " + nb1[0]["name"] +
                  ", " + ("%.1f" % _hav(p, nb1[0])) + " miles from " + p["name"] + ", and "
                  + p["name"] + " sits in " + p["county"] + " County.")
-    t_h2 = pick(["Getting to " + p["name"] + " from the shop",
-                 "How far " + p["name"] + " is, honestly",
-                 "Coverage and scheduling for " + p["name"],
-                 "The drive, and what it means for small jobs"], seed, 13)
+    t_h2 = pick(["How soon can we get to " + p["name"] + "?",
+                 "Do you actually come out to " + p["name"] + "?",
+                 "Scheduling, and how far " + p["name"] + " really is",
+                 "The drive, and what it means for a small job"], seed, 13)
     travel = ('<h2>' + t_h2 + '</h2>\n<p>' + t_lead + "</p>\n" +
               ("<p>" + t_mid + "</p>\n" if t_mid else "") +
               "<p>" + t_tail + "</p>\n")
 
-    # ---- order the middle sections -----------------------------------------
-    # Six orderings, chosen by the place seed. Two towns with the same era, the
-    # same profile and the same phrasing draw still lay out differently, which
-    # is the last of the anti-doorway requirements: vary the structure, not just
-    # the nouns.
-    parts = dict(means=means, rrp=rrp, contrast=contrast, services=services, travel=travel)
+    # ---- order the page ----------------------------------------------------
+    # THE INVERSION. The old page ran: Census block, then five sections in one of
+    # six orders. A homeowner therefore met a median build year before they met
+    # a service. The new order answers the four questions somebody actually
+    # arrives with, then shows the working:
+    #
+    #   opener    can you do my job, what moves the cost, how far, when   (new)
+    #   services  what we do here, ordered by what this housing needs
+    #   means     what decides the price on a house this age
+    #   rrp       the lead-paint question, in plain English
+    #   travel    how soon we can get there
+    #   stock     the figures and the citation, as supporting evidence
+    #   contrast  how the nearest place differs, on the numbers
+    #
+    # The six orderings survive, because varying the structure is one of the
+    # anti-doorway requirements and dropping it would cost real differentiation.
+    # What is constrained now is the top: `services` is always first or second,
+    # so the answer to "can you do my job" is never below the fold. The data
+    # block is always last, because that is the point of the rewrite.
+    parts = dict(means=means, rrp=rrp, services=services, travel=travel)
     orders = [
-        ["means", "rrp", "contrast", "services", "travel"],
-        ["rrp", "means", "contrast", "travel", "services"],
-        ["contrast", "means", "rrp", "services", "travel"],
-        ["means", "contrast", "rrp", "travel", "services"],
-        ["rrp", "contrast", "means", "services", "travel"],
-        ["contrast", "rrp", "means", "travel", "services"],
+        ["services", "means", "rrp", "travel"],
+        ["services", "rrp", "means", "travel"],
+        ["means", "services", "rrp", "travel"],
+        ["services", "means", "travel", "rrp"],
+        ["rrp", "services", "means", "travel"],
+        ["services", "travel", "means", "rrp"],
     ]
-    body = stock + "".join(parts[k] for k in pick(orders, seed, 14))
+    body = opener + "".join(parts[k] for k in pick(orders, seed, 14)) + stock + contrast
 
     # ---- the hand-written note, where one exists ---------------------------
     ed = EDITORIAL.get(p["slug"])
@@ -5672,18 +6628,23 @@ def build_city(p, posts=()):
     html = head(title, desc, fn, herokey, up=up)
     html += header(CITY_DIR + "/index.html", up)
     html += '<main id="main">\n' + crumb_html
+    # The lede is the first sentence a homeowner reads, and it used to be
+    # written for somebody auditing the page. One variant said "Numbers first,
+    # sales second" out loud. It is the answer first now. The lede sits OUTSIDE
+    # the region doorway_audit() measures, so these are free to be plain.
     html += hero(city_h1(p, seed),
-                 pick(["A real read on " + where + ": how old the housing is, what it is "
-                       "likely made of, and what that changes about the quote. The figures "
-                       "are published and the source is named.",
-                       "What the housing in " + p["name"] + " is, what that means for the "
-                       "work, and how far it is from the Bridgeview shop. Numbers first, "
-                       "sales second.",
-                       "Every town on this site gets its own read, because a " +
-                       str(p["medyr"]) + "-median house is not the same job as a newer one. "
-                       "Here is " + p["name"] + ".",
-                       "Housing age, structure mix and distance for " + where + ", with the "
-                       "source cited, and what each of those changes about a paint job."],
+                 pick(["Inside, outside, cabinets, drywall and the repairs that come first, "
+                       "for houses in " + where + ". Owner run, quoted after we walk the "
+                       "job, and you get a real answer on the call.",
+                       "We paint houses in " + p["name"] + " and fix what has to be fixed "
+                       "before the paint goes on. Tell us the rooms and roughly what you "
+                       "want, and you will know what happens next.",
+                       "Painting and remodeling for " + where + ": what we do, what it "
+                       "usually takes on a house around here, and how soon somebody can come "
+                       "and look at it.",
+                       "House painting and repair in " + where + ", from an owner-run shop "
+                       "in Bridgeview. What we do, what moves the price, and how to get "
+                       "a number without a sales visit."],
                       seed, 17),
                  "Service area &middot; " + where, herokey,
                  "Get " + p["name"] + " looked at",
@@ -5739,29 +6700,39 @@ def build_areas_hub():
             continue
         cards = ""
         for q in rows:
-            age = (_pc(q["pre1980"]) + "% pre-1980" if q["pre1980"] is not None
-                   else _pc(q["pre1970"]) + "% pre-1970")
+            # One plain sentence per town, not a row of statistics. The figures
+            # are still real and still on the town's own page. What this line
+            # has to do is answer "is my town on here and how far away are
+            # they", which is the only question anybody brings to a hub page.
+            age = (_pc(q["pre1980"]) + " percent of it before 1980" if q["pre1980"] is not None
+                   else _pc(q["pre1970"]) + " percent of it before 1970")
+            where = ("This is where our shop is." if q["slug"] == HOME_TOWN_SLUG
+                     else ("%.1f" % q["mi"]) + " miles from the shop.")
             cards += ('<li><h4><a href="' + q["slug"] + '.html">' + city_anchor(q) + "</a></h4>"
-                      "<p>Median build year " + str(q["medyr"]) + ", " + age + ", " +
-                      _n(q["own"]) + " owner households, " + ("%.1f" % q["mi"]) +
-                      " miles out.</p></li>")
+                      "<p>" + where + " Most of it went up around " + str(q["medyr"]) +
+                      ", and " + age + ".</p></li>")
         groups += ('<h3 id="' + key + '">' + label + "</h3>\n<p>" + blurb + "</p>\n"
                    '<ul class="reads areas-list">' + cards + "</ul>\n")
 
     faqrows, faqld = faq([
+      ("My town is not on the list. Does that mean no?",
+       "It means ask. The list is the service area the owner has confirmed, and no town goes "
+       "on this site as a promise before he makes it. If you are just outside it, call "
+       + PHONE_DISPLAY + " and you will get a straight yes or no on the phone rather than a "
+       "salesman driving out to find out."),
       ("Do you actually work in Chicago, or is that just on the website?",
        "The city is real work and it is the south and southwest sides. Bridgeview is a short "
        "run from Garfield Ridge, Clearing, Ashburn, Beverly and Mount Greenwood, and that "
-       "stock is the same brick and plaster as the inner suburbs, so it is the same job. "
-       "What will not be pretended here is coverage of the whole city. A north side call is "
-       "better served by somebody on the north side, and you will be told that on the phone "
-       "rather than after a missed appointment."),
-      ("Why does every town page lead with the age of the housing?",
-       "Because it is the single most useful thing to know before quoting, and it is the "
-       "thing most quotes skip. Chicago runs 68.6 percent of its housing units built before "
-       "1970. The close ring around Bridgeview has median build years between 1947 and 1977. "
-       "The outer southwest towns are 1988 to 2000 construction. Those are three completely "
-       "different jobs, and calling all of them painting is how a number ends up wrong."),
+       "housing is the same brick and plaster as the inner suburbs, so it is the same job. "
+       "What we will not pretend is that we cover the whole city. A north side call is better "
+       "served by somebody on the north side, and you will hear that on the phone rather than "
+       "after a missed appointment."),
+      ("Why does every town page talk about how old the houses are?",
+       "Because it is the most useful thing to know before anybody quotes, and it is the thing "
+       "most quotes skip. Around here, older usually means plaster instead of drywall, deeper "
+       "trim to cut in, windows that have been painted a dozen times, and paint from before "
+       "1978 underneath it all. Newer usually means big two story walls and tall entries that "
+       "need staging. Same word, painting, and completely different jobs."),
       ("Where do the numbers on these pages come from?",
        "Suburbs and towns come from the U.S. Census Bureau American Community Survey 5-year "
        "estimates for 2019 to 2023. Chicago neighborhoods come from the Chicago Metropolitan "
@@ -5770,7 +6741,7 @@ def build_areas_hub():
        "covers three different neighborhoods, and a page built on it would be describing an "
        "average of places that have nothing in common. Every figure is a fact about the "
        "place, not a price for work."),
-      ("Are the west suburbs covered?",
+      ("Do you cover the west suburbs?",
        "Not on this site, and that is deliberate rather than an oversight. The confirmed "
        "service area is Chicago plus the south and southwest suburbs. Berwyn, Cicero, "
        "Riverside, Brookfield, La Grange and Oak Park have been researched and are ready to "
@@ -5786,26 +6757,26 @@ def build_areas_hub():
     html = head(title, desc, fn, "hero-service-area", up=up)
     html += header(fn, up)
     html += '<main id="main">\n' + crumb_html
-    html += hero("Where we work, and what each place is actually like.",
-                 str(n) + " towns and Chicago neighborhoods, each one with its own page built "
-                 "off its own housing data. A 1941 median in Beverly and a 2000 median in "
-                 "Frankfort are not the same job, and pretending otherwise is how quotes go "
-                 "wrong.",
+    html += hero("Find your town. We cover Chicago and the south suburbs.",
+                 "We paint and remodel across Chicago and the south and southwest suburbs, "
+                 + str(n) + " towns and neighborhoods in all. They are grouped below by how far "
+                 "they are from our shop in Bridgeview, so start with the group yours is in. If "
+                 "you cannot find it, call " + PHONE_DISPLAY + " and ask rather than assuming.",
                  "Service area &middot; Chicago and the south suburbs", "hero-service-area",
                  "Check your town", "Tell us where you are and what needs doing.",
                  page="Service areas (" + fn + ")", up=up)
     html += ('<section>\n  <div class="wrap">\n'
-             '    <div class="callout" style="margin-top:0"><h2>South side and south suburbs, '
-             'in that order of honesty</h2>'
-             '<p>The shop is at ' + STREET + ' in Bridgeview, about where the city stops and '
-             'the southwest suburbs start. That one address is the whole geography of this '
-             'business, and every page below is built outward from it and says how far out '
-             'it is.</p>'
-             '<p>Each place gets its own page because each place is a different job. The '
-             'city and the inner ring are pre-1978 brick and plaster with heavy trim. The '
-             'outer southwest is late 1980s and 1990s construction with big elevations and '
-             'tall interiors. The pages carry the published housing figures for that place '
-             'and name the source, so you can check them.</p></div>\n'
+             '    <div class="callout" style="margin-top:0"><h2>How to use this page</h2>'
+             '<p>Everything below is sorted by distance from our shop at ' + STREET + ' in '
+             'Bridgeview, which sits about where the city stops and the southwest suburbs '
+             'start. The closer you are, the easier it is to get a small job looked at on its '
+             'own. Further out, a whole interior or a full exterior is straightforward and '
+             'anything smaller is worth a quick phone call first.</p>'
+             '<p>Every town has its own page, and it says what the houses there are usually '
+             'like: how old they are, what that means for the trim and the windows, and what '
+             'tends to push a quote up or down. A 1941 street in Beverly and a 2000 '
+             'subdivision in Frankfort are not the same job, and treating them as one is how '
+             'quotes go wrong.</p></div>\n'
              + BODY_OPEN + groups + BODY_CLOSE +
              '    <p class="src">Housing figures on this page and on every town page are '
              'from two sources, named on each page: the ' + CENSUS_CITE_PLACES +
@@ -5813,7 +6784,8 @@ def build_areas_hub():
              'areas. ' + CENSUS_MARK + "</p>\n"
              '  </div>\n</section>\n')
     html += ('<section class="alt">\n  <div class="wrap narrow">\n'
-             '    <p class="eyebrow">Questions</p>\n    <h2>About the service area</h2>\n    '
+             '    <p class="eyebrow">Questions</p>\n'
+             '    <h2>About where we work</h2>\n    '
              + faqrows + "  </div>\n</section>\n")
     html += cta(up)
     html += "</main>\n" + footer(up)

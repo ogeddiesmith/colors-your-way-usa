@@ -1,7 +1,7 @@
 ---
 title: "Interior Painting: How to Tell Good Prep From a Fast Cheap Job"
 slug: "how-to-tell-good-prep-from-a-fast-cheap-job"
-description: "Most paint failure is prep failure. What good preparation looks like, the shortcuts to watch for, and nine questions to ask before you sign. Bridgeview, IL."
+description: "Most paint failure is prep failure. What good preparation looks like, the shortcuts to watch for, and nine questions to ask before you sign. Chicagoland."
 date: "2026-08-31"
 order: 2
 category: "Interior painting"

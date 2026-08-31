@@ -1,7 +1,7 @@
 ---
 title: "Cabinet Refinishing Versus Replacing: Cost, Timeline, and When Each One Is Right"
 slug: "cabinet-refinishing-vs-replacing"
-description: "Refinish, reface or replace: what each costs in published market data, how long each takes, and the three questions that decide it. Bridgeview, IL."
+description: "Refinish, reface or replace: what each costs in published market data, how long each takes, and three questions that decide it. Chicago and the south suburbs."
 date: "2026-08-31"
 order: 4
 category: "Cabinets"
