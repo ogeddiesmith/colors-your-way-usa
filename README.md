@@ -80,7 +80,11 @@ exterior-painting.html       |
 cabinet-refinishing.html     |  Five service pages, painting first
 drywall-and-repair.html      |
 remodeling.html             /   (deliberately last: it dilutes painting relevance)
-service-area.html           Twelve towns, each with genuinely different content
+areas/index.html            Service area hub. Every place grouped by distance band
+areas/<place>.html          One page per town or Chicago neighborhood. 76 of them
+service-area.html           Signpost only. The old service area URL, permanently
+                            noindex and out of the sitemap, kept so links that were
+                            already shared still land somewhere. It links to the hub
 contact.html                Phone, address, form, paperwork status
 thank-you.html              Where the form lands after a successful submission.
                             PERMANENTLY noindex and kept out of the sitemap: that
@@ -94,6 +98,42 @@ style.css  app.js  logo.svg  sitemap.xml  robots.txt  .nojekyll
 ```
 
 `build.py` also prints an audit result and, while in preview, a sign-off checklist.
+
+---
+
+## The city pages, and the rule that lets them exist
+
+`areas/` holds 76 pages, one per town or Chicago community area, plus the hub at `areas/index.html`.
+They are generated from `PLACE_TOWNS` and `PLACE_NBHD` in `build.py`, which hold the published
+housing data for 110 researched places. The research file behind them is
+`launch/12-CITY-PAGE-DATA.md`.
+
+**Programmatic location pages are the easiest way there is to get a small site penalized.** Google's
+spam policy names doorway pages directly: pages generated for many cities that differ only by the
+place name. The action is taken against the whole domain, not the folder. So this section is allowed
+to exist on exactly one condition, and `build.py` enforces it rather than trusting it:
+
+- **Jaccard similarity** over 8-word shingles of the town-specific prose. Two city pages sharing
+  more than `SIM_JACCARD_MAX` of their body text fail the build.
+- **Containment**, the share of one page's shingles that also appear on another. Catches a short
+  page that is entirely a subset of a long one, which Jaccard scores low and Google does not.
+- **The unique-sentence floor.** Every city page must contain at least one full sentence that
+  appears on no other city page. A page with nothing of its own does not need to be its own URL.
+
+The measured region is marked in the HTML by `<!-- city-body -->` comments. The header, the quote
+form, the CTA and the footer are identical on every page of the site by design, and measuring them
+would hide the duplication the check exists to find.
+
+What makes the pages genuinely different is real data, not synonyms: median build year, share built
+before 1980 (before 1970 for Chicago neighborhoods, whose source does not publish a 1978 bucket),
+tenure split, the detached / attached / multi-unit mix, median rooms, median home value and
+straight-line distance from the shop. Rankings and comparisons are computed from the table, never
+typed, so they cannot go stale when a place is added or removed.
+
+**What the data does not contain, and must never be invented:** exterior wall material. There is no
+brick-versus-frame variable in the Census and none in the regional data either. Every sentence
+describing construction type is inference from era and structure mix, is labeled as inference on the
+page, and carries no percentage. Do not "improve" that by attaching a number to it.
 
 ---
 
@@ -112,8 +152,10 @@ it fails**, so a bad build cannot be deployed by accident. The audit refuses:
 
 Two audited exceptions, both checked rather than assumed:
 
-- `service-area.html` carries Census median home values. Those are facts about towns, not prices
-  for work.
+- `areas/*.html` carry Census median home values. Those are facts about towns, not prices for
+  work. The exemption is NOT a blanket one: the page has to carry the `CENSUS_MARK` sentence
+  saying in so many words that the figure is a home value and not a price. Strip that sentence
+  and the build fails.
 - `blog/*.html` carry published market ranges. `build_post()` automatically injects a "none of it
   is a Colors Your Way USA price" block into any post that quotes money, and the audit fails the
   build if that block or the sources are missing.
@@ -182,7 +224,7 @@ month 2 to 3 queue in `launch/08-SEO-AND-KEYWORD-RESEARCH.md` section 7:
 
 | Post link | Currently lands on | Fix |
 |---|---|---|
-| `/rental-turnover-painting/` | `service-area.html` | Build the rental turnover page, then re-point |
+| `/rental-turnover-painting/` | `areas/index.html` | Build the rental turnover page, then re-point |
 | `/deck-and-fence-staining/` | `exterior-painting.html` | Build the deck and fence page, then re-point |
 
 ---
@@ -352,10 +394,18 @@ Symptoms are: submissions stop arriving, or the visitor sees a Web3Forms error p
 
 `build.py` prints this list on every preview build. Nothing here is optional.
 
-- [ ] **Get Mike to confirm the service area.** The towns on `service-area.html` are the near ring
-      around the Bridgeview shop plus the four towns where lead interest was observed. He has never
-      formally confirmed a radius. Do not list a town he will not drive to: a profile claiming
-      Frankfort while he actually works Bridgeview to Oak Lawn dilutes relevance everywhere.
+- [ ] **Get Mike to confirm the outer ring of the service area.** There are now 76 places with a
+      page each, from Bridgeview at 0.0 miles to Park Forest at 18.9. He confirmed the shape of the
+      area, Chicago plus south and southwest, on 2026-08-31. He has never confirmed the individual
+      towns at the edge. Do not list a town he will not drive to: a site claiming Frankfort while he
+      actually works Bridgeview to Oak Lawn dilutes relevance everywhere. Cutting a place is one
+      line in `PLACE_TOWNS` and a rebuild.
+- [ ] **Ask him about the west suburbs.** Berwyn, Cicero, Riverside, Brookfield, La Grange, Oak Park
+      and 27 others are already researched and sitting in the place table with status `GATE-WEST`.
+      `INCLUDE_WEST_SUBURBS = False`, so not one of them generates. They are close, old, and the
+      strongest lead-safe angle on the whole researched list. If he works them, flip the flag and 33
+      more pages build. If he does not, leave it alone: a page claiming coverage of a town is a
+      promise, and no promise goes on this site before he makes it.
 - [ ] **Get his job photos.** Every photograph on this site is Pexels stock, including the before
       and after pairs, whose two halves are not the same room. This is the single biggest quality
       lever on the site and both the SEO and the competitor research reached that conclusion
