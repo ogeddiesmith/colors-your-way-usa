@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PREVIEW: robots.txt currently disallows everything and every page carries
+     noindex, so this sitemap is not yet doing anything. Both come off together
+     at go-live. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/interior-painting.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/exterior-painting.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/cabinet-refinishing.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/drywall-and-repair.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/remodeling.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/service-area.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/contact.html</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/</loc></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/cabinet-refinishing-vs-replacing.html</loc><lastmod>2026-08-31</lastmod></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/choosing-paint-colors-older-southwest-suburb-homes.html</loc><lastmod>2026-08-31</lastmod></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/best-time-to-paint-house-exterior-chicago.html</loc><lastmod>2026-08-31</lastmod></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/interior-painting-cost-southwest-chicago-suburbs.html</loc><lastmod>2026-08-31</lastmod></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/how-to-tell-good-prep-from-a-fast-cheap-job.html</loc><lastmod>2026-08-31</lastmod></url>
+  <url><loc>https://ogeddiesmith.github.io/colors-your-way-usa/blog/rental-turnover-painting-southwest-suburbs.html</loc><lastmod>2026-08-31</lastmod></url>
+</urlset>
