@@ -34,7 +34,7 @@ made contact and Mike never knows they existed.
 
 ```bash
 cd clients/colors-your-way-usa/site
-python3 build.py          # regenerates every HTML page, style.css, app.js, sitemap.xml, robots.txt
+python3 build.py          # regenerates the site into docs/: every HTML page, style.css, app.js, sitemap.xml, robots.txt
 ```
 
 That is the whole workflow. No dependencies, no virtualenv, Python 3 standard library only
@@ -43,7 +43,7 @@ That is the whole workflow. No dependencies, no virtualenv, Python 3 standard li
 To preview it locally:
 
 ```bash
-python3 -m http.server 8000     # then open http://localhost:8000
+python3 -m http.server 8000 --directory docs     # then open http://localhost:8000
 ```
 
 ---
@@ -72,6 +72,10 @@ If you want to change:
 ---
 
 ## What gets generated
+
+Everything below is written into `docs/`. GitHub Pages publishes only master `/docs` (since 2026-10-10), so
+`build.py`, `fetch_images.py`, this README and the blog's Markdown sources are not served. `images/` and
+`blog/images/` are sources; the build copies them into `docs/`.
 
 ```
 index.html                  Home
