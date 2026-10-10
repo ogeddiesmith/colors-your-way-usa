@@ -1,6 +1,0 @@
-# PREVIEW BUILD. Everything is blocked on purpose.
-# Remove this block at go-live by setting NOINDEX = False in build.py
-# and re-running. Leaving it in place is the most common way a launch
-# quietly produces nothing for six months.
-User-agent: *
-Disallow: /
